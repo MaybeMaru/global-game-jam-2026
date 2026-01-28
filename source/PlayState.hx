@@ -8,16 +8,28 @@ import flixel.FlxState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.util.FlxSignal;
 
+// TODO
+// selection wheel
+// houses
+// walking kids
+// health/speed bar
+// points candy
+// art
 class PlayState extends FlxState
 {
 	public static var game:PlayState;
 
 	public var ui:FlxCamera;
 
+	public var darkness:Darkness;
+
 	override public function create()
 	{
 		super.create();
+
+		postDraw = new FlxSignal();
 
 		game = this;
 
@@ -34,10 +46,22 @@ class PlayState extends FlxState
 		back.alpha = 0.2;
 		add(back);
 
+		floor = new FlxSprite(0, 400);
+		floor.makeGraphic(1, 1, FlxColor.GRAY);
+		floor.setGraphicSize(2000, 400);
+		floor.updateHitbox();
+		floor.immovable = true;
+		add(floor);
+
 		player = new Player();
 		player.x = 400;
 		player.y = 300;
 		add(player);
+
+		darkness = new Darkness();
+		darkness.x = -300;
+		darkness.x -= darkness.width;
+		add(darkness);
 
 		var selector = new MaskSelection();
 		selector.camera = ui;
@@ -45,11 +69,8 @@ class PlayState extends FlxState
 
 		FlxG.debugger.drawDebug = true;
 
-		floor = new FlxSprite(0, 400);
-		floor.makeGraphic(800, 400, FlxColor.GRAY);
-		floor.immovable = true;
-		add(floor);
-
+		FlxG.camera.maxScrollY = 500;
+		FlxG.camera.targetOffset.set(50, 0);
 		FlxG.camera.follow(player, PLATFORMER);
 	}
 
@@ -63,7 +84,19 @@ class PlayState extends FlxState
 
 		FlxG.collide(player, floor);
 
+		// die
+		if (FlxG.overlap(darkness, player))
+			FlxG.resetState();
+
 		if (FlxG.keys.justPressed.R)
 			FlxG.resetGame();
+	}
+
+	public var postDraw:FlxSignal;
+
+	override function draw()
+	{
+		super.draw();
+		postDraw.dispatch();
 	}
 }

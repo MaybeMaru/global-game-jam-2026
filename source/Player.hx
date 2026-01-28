@@ -4,6 +4,8 @@ import Mask.MaskType;
 import flixel.*;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
+import flixel.util.FlxColor;
+import flixel.util.FlxSpriteUtil;
 
 class Player extends FlxSprite
 {
@@ -20,6 +22,11 @@ class Player extends FlxSprite
 
 		mask = new Mask(this);
 
+		pumpkinGlow = new FlxSprite();
+		pumpkinGlow.makeGraphic(100, 100, 0);
+		FlxSpriteUtil.drawCircle(pumpkinGlow, -1, -1, -1, FlxColor.YELLOW);
+		pumpkinGlow.blend = ADD;
+
 		setMaskType(SKELETON);
 	}
 
@@ -28,12 +35,34 @@ class Player extends FlxSprite
 	public var jumpForce:Float = 900;
 
 	public var projectiles:FlxGroup;
+	public var pumpkinGlow:FlxSprite;
 
 	override function draw()
 	{
 		super.draw();
 		mask.draw();
 		projectiles.draw();
+
+		final elapsed = FlxG.elapsed;
+
+		if (maskType == PUMPKIN)
+		{
+			PlayState.game.postDraw.addOnce(() ->
+			{
+				pumpkinGlow.draw();
+			});
+
+			var showSpeed = pumpkinActive ? 4 : 6;
+
+			pumpkinGlow.alpha = FlxMath.lerp(pumpkinGlow.alpha, pumpkinActive ? 0.6 : 0.0, elapsed * showSpeed);
+			pumpkinGlow.scale.x = FlxMath.lerp(pumpkinGlow.scale.x, pumpkinActive ? 1.0 : 0.25, elapsed * showSpeed);
+			pumpkinGlow.scale.y = FlxMath.lerp(pumpkinGlow.scale.y, pumpkinActive ? 1.0 : 0.333, elapsed * showSpeed);
+
+			pumpkinGlow.updateHitbox();
+
+			pumpkinGlow.x = x + ((width - pumpkinGlow.width) / 2);
+			pumpkinGlow.y = y + ((height - pumpkinGlow.height) / 2);
+		}
 	}
 
 	public var clownActive:Bool = false;
@@ -41,9 +70,17 @@ class Player extends FlxSprite
 
 	public var boneTimer:Float = 0.0;
 
+	public var pumpkinActive:Bool = false;
+
+	public var spiderDoubleJump:Bool = false;
+
 	public function setMaskType(type:MaskType)
 	{
 		clownActive = false;
+
+		pumpkinActive = false;
+		pumpkinGlow.alpha = 0.0;
+		pumpkinGlow.scale.set(0.3, 0.3);
 
 		mask.setType(type);
 		maskType = type;
@@ -66,6 +103,8 @@ class Player extends FlxSprite
 						clownY = y;
 					}
 				case PUMPKIN:
+					pumpkinActive = !pumpkinActive;
+
 				case SKELETON:
 					if (boneTimer <= 0)
 					{
@@ -81,6 +120,11 @@ class Player extends FlxSprite
 
 		var floored = isTouching(FLOOR);
 
+		if (floored)
+		{
+			spiderDoubleJump = false;
+		}
+
 		if (clownActive)
 		{
 			y = FlxMath.lerp(y, clownY - 15, elapsed * 5);
@@ -88,9 +132,16 @@ class Player extends FlxSprite
 
 		velocity.y = FlxMath.lerp(velocity.y, clownActive ? 0 : fallSpeed, elapsed * 5);
 
-		if (FlxG.mouse.justPressedRight && floored)
+		if (FlxG.mouse.justPressedRight)
 		{
-			velocity.y = -jumpForce;
+			var doJump = floored || (!spiderDoubleJump && maskType == SPIDER);
+			if (doJump)
+			{
+				velocity.y = -jumpForce;
+
+				if (maskType == SPIDER && !floored)
+					spiderDoubleJump = true;
+			}
 		}
 
 		if (FlxG.keys.pressed.A || FlxG.keys.pressed.D)
