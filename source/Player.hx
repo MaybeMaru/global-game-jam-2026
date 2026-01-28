@@ -68,6 +68,8 @@ class Player extends FlxSprite
 	public var clownActive:Bool = false;
 	public var clownY:Float = 0.0;
 
+	var clownOffsetY:Float = 0.0;
+
 	public var boneTimer:Float = 0.0;
 
 	public var pumpkinActive:Bool = false;
@@ -128,6 +130,7 @@ class Player extends FlxSprite
 		if (clownActive)
 		{
 			y = FlxMath.lerp(y, clownY - 15, elapsed * 5);
+			y += FlxMath.fastSin(FlxG.game.ticks / (1000 * 0.8)) * 0.5;
 		}
 
 		velocity.y = FlxMath.lerp(velocity.y, clownActive ? 0 : fallSpeed, elapsed * 5);

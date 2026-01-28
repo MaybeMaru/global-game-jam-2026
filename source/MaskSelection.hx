@@ -59,6 +59,8 @@ class MaskSelection extends FlxGroup
 
 		var wheel = FlxG.mouse.wheel;
 
+		// trace(wheel);
+
 		wheelTimer -= elapsed;
 
 		if (wheel != 0)
@@ -66,11 +68,11 @@ class MaskSelection extends FlxGroup
 			if (wheelTimer <= 0)
 			{
 				wheelTimer = 0.1;
-				if (wheel == 1)
+				if (wheel > 0)
 				{
 					changeMask(-1);
 				}
-				else if (wheel == -1)
+				else if (wheel < 0)
 				{
 					changeMask(1);
 				}

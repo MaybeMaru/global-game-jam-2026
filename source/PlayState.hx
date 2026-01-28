@@ -72,6 +72,9 @@ class PlayState extends FlxState
 		FlxG.camera.maxScrollY = 500;
 		FlxG.camera.targetOffset.set(50, 0);
 		FlxG.camera.follow(player, PLATFORMER);
+
+		FlxG.camera.pixelPerfectRender = true;
+		ui.pixelPerfectRender = true;
 	}
 
 	public var player:Player;
