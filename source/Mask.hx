@@ -26,6 +26,7 @@ class Mask extends FlxSprite
 
 		x = player.x + ((player.width - width) / 2);
 		x += player.facing == LEFT ? -10 : 10;
+		flipX = player.facing == LEFT;
 		y = player.y;
 
 		if (player.maskType == CLOWN)
@@ -51,19 +52,28 @@ class Mask extends FlxSprite
 	{
 		if (type == NONE)
 		{
-			visible = false;
 			return;
 		}
 
-		visible = true;
-		color = switch (type)
+		/*color = switch (type)
+			{
+				case NONE: FlxColor.WHITE;
+				case SKELETON: FlxColor.GRAY;
+				case PUMPKIN: FlxColor.ORANGE;
+				case SPIDER: FlxColor.PURPLE;
+				case CLOWN: FlxColor.RED;
+		}*/
+
+		var lol = switch (type)
 		{
-			case NONE: FlxColor.WHITE;
-			case SKELETON: FlxColor.GRAY;
-			case PUMPKIN: FlxColor.ORANGE;
-			case SPIDER: FlxColor.PURPLE;
-			case CLOWN: FlxColor.RED;
+			case NONE: '';
+			case SKELETON: 'skeleton';
+			case PUMPKIN: "pumpkin";
+			case SPIDER: "spider";
+			case CLOWN: "clown";
 		}
+
+		loadGraphic('assets/images/masks/' + lol + '.png');
 	}
 }
 

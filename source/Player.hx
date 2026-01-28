@@ -16,7 +16,7 @@ class Player extends FlxSprite
 	{
 		super();
 
-		makeGraphic(25, 50);
+		makeGraphic(25, 50, 0xffada87f);
 
 		projectiles = new FlxGroup();
 
@@ -144,7 +144,7 @@ class Player extends FlxSprite
 		if (clownActive)
 		{
 			y = FlxMath.lerp(y, clownY - 15, elapsed * 5);
-			y += FlxMath.fastSin(FlxG.game.ticks / (1000 * 0.8)) * 0.5;
+			y += FlxMath.fastSin(FlxG.game.ticks / (1000)) * 0.5;
 		}
 
 		velocity.y = FlxMath.lerp(velocity.y, clownActive ? 0 : fallSpeed, elapsed * 5);

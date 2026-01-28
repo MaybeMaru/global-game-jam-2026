@@ -39,6 +39,8 @@ class PlayState extends FlxState
 		ui.bgColor.alpha = 0;
 		FlxG.cameras.add(ui, false);
 
+		camera.zoom = 1.25;
+
 		FlxG.worldBounds.set(-9999, -9999, 99999, 99999);
 
 		var back = new FlxBackdrop();
@@ -71,8 +73,9 @@ class PlayState extends FlxState
 
 		FlxG.debugger.drawDebug = true;
 
-		FlxG.camera.maxScrollY = 500;
+		FlxG.camera.maxScrollY = 450;
 		FlxG.camera.targetOffset.set(50, 0);
+		// FlxG.camera.followLead.x = 2;
 		FlxG.camera.follow(player, PLATFORMER);
 
 		FlxG.camera.pixelPerfectRender = true;
