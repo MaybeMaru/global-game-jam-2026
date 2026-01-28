@@ -23,9 +23,14 @@ class Player extends FlxSprite
 		mask = new Mask(this);
 
 		pumpkinGlow = new FlxSprite();
-		pumpkinGlow.makeGraphic(100, 100, 0);
-		FlxSpriteUtil.drawCircle(pumpkinGlow, -1, -1, -1, FlxColor.YELLOW);
+		pumpkinGlow.loadGraphic('assets/images/pumpkinglow.png');
+		pumpkinGlow.color = FlxColor.YELLOW;
+		// pumpkinGlow.makeGraphic(100, 100, 0);
+		// FlxSpriteUtil.drawCircle(pumpkinGlow, -1, -1, -1, FlxColor.YELLOW);
 		pumpkinGlow.blend = ADD;
+
+		pumpkinShadow = new FlxSprite();
+		pumpkinShadow.loadGraphic('assets/images/shadow pumpkin.png');
 
 		setMaskType(SKELETON);
 	}
@@ -36,6 +41,7 @@ class Player extends FlxSprite
 
 	public var projectiles:FlxGroup;
 	public var pumpkinGlow:FlxSprite;
+	public var pumpkinShadow:FlxSprite;
 
 	override function draw()
 	{
@@ -45,7 +51,15 @@ class Player extends FlxSprite
 
 		final elapsed = FlxG.elapsed;
 
-		if (maskType == PUMPKIN)
+		pumpkinShadow.x = x + ((width - pumpkinShadow.width) / 2);
+		pumpkinShadow.y = y + ((height - pumpkinShadow.height) / 2);
+		pumpkinShadow.draw();
+
+		final inPumpkin = maskType == PUMPKIN;
+		pumpkinShadow.colorTransform.alphaOffset = FlxMath.lerp(pumpkinShadow.colorTransform.alphaOffset, inPumpkin ? (pumpkinActive ? -50 : 0) : -255,
+			elapsed * 3);
+
+		if (inPumpkin)
 		{
 			PlayState.game.postDraw.addOnce(() ->
 			{
@@ -54,9 +68,9 @@ class Player extends FlxSprite
 
 			var showSpeed = pumpkinActive ? 4 : 6;
 
-			pumpkinGlow.alpha = FlxMath.lerp(pumpkinGlow.alpha, pumpkinActive ? 0.6 : 0.0, elapsed * showSpeed);
-			pumpkinGlow.scale.x = FlxMath.lerp(pumpkinGlow.scale.x, pumpkinActive ? 1.0 : 0.25, elapsed * showSpeed);
-			pumpkinGlow.scale.y = FlxMath.lerp(pumpkinGlow.scale.y, pumpkinActive ? 1.0 : 0.333, elapsed * showSpeed);
+			pumpkinGlow.colorTransform.alphaOffset = FlxMath.lerp(pumpkinGlow.colorTransform.alphaOffset, pumpkinActive ? 0 : -155, elapsed * showSpeed);
+			// pumpkinGlow.scale.x = FlxMath.lerp(pumpkinGlow.scale.x, pumpkinActive ? 1.0 : 1, elapsed * showSpeed);
+			// pumpkinGlow.scale.y = FlxMath.lerp(pumpkinGlow.scale.y, pumpkinActive ? 1.0 : 1, elapsed * showSpeed);
 
 			pumpkinGlow.updateHitbox();
 
@@ -81,8 +95,8 @@ class Player extends FlxSprite
 		clownActive = false;
 
 		pumpkinActive = false;
-		pumpkinGlow.alpha = 0.0;
-		pumpkinGlow.scale.set(0.3, 0.3);
+		pumpkinGlow.colorTransform.alphaOffset = -255;
+		// pumpkinGlow.scale.set(0.3, 0.3);
 
 		mask.setType(type);
 		maskType = type;

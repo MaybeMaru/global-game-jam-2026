@@ -29,6 +29,8 @@ class PlayState extends FlxState
 	{
 		super.create();
 
+		FlxG.mouse.visible = false;
+
 		postDraw = new FlxSignal();
 
 		game = this;
