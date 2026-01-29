@@ -23,7 +23,9 @@ class PlayState extends FlxState
 {
 	public static var game:PlayState;
 
-	public var ui:FlxCamera;
+	public var uiCam:FlxCamera;
+
+	public var ui:UI;
 
 	public var darkness:Darkness;
 
@@ -39,9 +41,9 @@ class PlayState extends FlxState
 
 		game = this;
 
-		ui = new FlxCamera();
-		ui.bgColor.alpha = 0;
-		FlxG.cameras.add(ui, false);
+		uiCam = new FlxCamera();
+		uiCam.bgColor.alpha = 0;
+		FlxG.cameras.add(uiCam, false);
 
 		camera.zoom = 1.25;
 
@@ -53,6 +55,12 @@ class PlayState extends FlxState
 		back.velocity.set(50, 50);
 		back.alpha = 0.2;
 		add(back);
+
+		var back2 = new FlxBackdrop(null, X);
+		back2.scale.set(8, 8);
+		back.scrollFactor.set(0.75, 0.75);
+		back2.alpha = 0.6;
+		add(back2);
 
 		var background:FlxGroup = new FlxGroup();
 		add(background);
@@ -74,9 +82,9 @@ class PlayState extends FlxState
 		darkness.x -= darkness.width;
 		add(darkness);
 
-		var uiStuff = new UI();
-		uiStuff.camera = ui;
-		add(uiStuff);
+		ui = new UI();
+		ui.camera = uiCam;
+		add(ui);
 
 		var maskTypes:Array<MaskType> = [PUMPKIN, SKELETON, CLOWN, SPIDER];
 		for (i => type in maskTypes)
@@ -90,7 +98,7 @@ class PlayState extends FlxState
 		FlxG.camera.follow(player, PLATFORMER);
 
 		FlxG.camera.pixelPerfectRender = true;
-		ui.pixelPerfectRender = true;
+		uiCam.pixelPerfectRender = true;
 	}
 
 	public var player:Player;

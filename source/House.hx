@@ -43,12 +43,26 @@ class House extends FlxSprite
 			{
 				var isSameType = houseType == PlayState.game.player.maskType;
 
-				if (isSameType) {}
+				if (isSameType)
+				{
+					goodHouse();
+				}
 				else
 				{
-					FlxG.camera.shake(0.01, 0.2);
+					wrongHouse();
 				}
 			}
 		}
+	}
+
+	function goodHouse()
+	{
+		PlayState.game.ui.score += 200;
+	}
+
+	function wrongHouse()
+	{
+		PlayState.game.ui.score -= 50;
+		FlxG.camera.shake(0.01, 0.2);
 	}
 }

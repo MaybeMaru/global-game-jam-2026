@@ -1,13 +1,18 @@
 package;
 
 import flixel.group.FlxGroup;
+import flixel.math.FlxMath;
 import flixel.text.FlxBitmapText;
 import flixel.ui.FlxBar;
 import flixel.util.FlxColor;
 
 class UI extends FlxGroup
 {
-	var life:Float = 90;
+	public var life:Float = 90;
+
+	public var score:Int = 0;
+
+	var scoreLerp:Float = 0.0;
 
 	var scoreText:FlxBitmapText;
 	var lifeBar:FlxBar;
@@ -31,5 +36,23 @@ class UI extends FlxGroup
 
 		var selector = new MaskSelection();
 		add(selector);
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		scoreLerp = FlxMath.lerp(scoreLerp, score, elapsed * 6);
+
+		var formatShit:String = Std.string(Std.int(scoreLerp));
+		for (i in 0...6)
+		{
+			if (formatShit.length < 6)
+			{
+				formatShit = '0' + formatShit;
+			}
+		}
+
+		scoreText.text = formatShit;
 	}
 }
