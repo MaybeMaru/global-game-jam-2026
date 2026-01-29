@@ -5,6 +5,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
 
 class House extends FlxSprite
 {
@@ -32,7 +33,7 @@ class House extends FlxSprite
 		// scrollFactor.x = 0.95;
 
 		x = xPos;
-		y = PlayState.game.floor.y - height;
+		y = PlayState.game.street.floorY - height;
 
 		doorHitbox = new FlxObject(0, 0, 100, 70);
 		doorHitbox.y = y + height - doorHitbox.height;
@@ -44,22 +45,43 @@ class House extends FlxSprite
 		super.update(elapsed);
 		doorHitbox.update(elapsed);
 
-		if (FlxG.keys.justPressed.W)
+		if (FlxG.keys.justPressed.W && PlayState.game.player.canMove)
 		{
 			if (FlxG.overlap(doorHitbox, PlayState.game.player))
 			{
-				var isSameType = houseType == PlayState.game.player.maskType;
-
-				if (isSameType)
-				{
-					goodHouse();
-				}
-				else
-				{
-					wrongHouse();
-				}
+				PlayState.game.player.canMove = false;
+				knock();
 			}
 		}
+	}
+
+	function knock()
+	{
+		var isSameType = houseType == PlayState.game.player.maskType;
+
+		new FlxTimer().start(0.2, (tmr) ->
+		{
+			FlxG.camera.shake(0.003, 0.05);
+			FlxG.sound.play('assets/sounds/knock.wav');
+			if (tmr.loopsLeft <= 0)
+			{
+				new FlxTimer().start(0.4, (tmr) ->
+				{
+					if (isSameType)
+					{
+						goodHouse();
+						FlxTimer.wait(0.15, () -> PlayState.game.player.canMove = true);
+					}
+					else
+					{
+						wrongHouse();
+						FlxG.camera.flash(0xffff0000);
+						@:privateAccess FlxG.camera._fxFlashAlpha = 0.2;
+						FlxTimer.wait(0.5, () -> PlayState.game.player.canMove = true);
+					}
+				});
+			}
+		}, 3);
 	}
 
 	override function draw()
@@ -83,6 +105,8 @@ class House extends FlxSprite
 		PlayState.game.ui.score += 200;
 		explodeCandy();
 		FlxG.sound.play('assets/sounds/yay.ogg');
+
+		PlayState.game.ui.life += 10;
 	}
 
 	function wrongHouse()
@@ -90,5 +114,7 @@ class House extends FlxSprite
 		PlayState.game.ui.score -= 50;
 		FlxG.camera.shake(0.01, 0.2);
 		FlxG.sound.play('assets/sounds/explosion.wav');
+
+		PlayState.game.ui.life -= 15;
 	}
 }

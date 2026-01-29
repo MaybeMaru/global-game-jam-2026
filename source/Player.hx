@@ -12,6 +12,8 @@ class Player extends FlxSprite
 	public var mask:Mask;
 	public var maskType:MaskType = NONE;
 
+	public var canMove:Bool = true;
+
 	public function new()
 	{
 		super();
@@ -204,7 +206,7 @@ class Player extends FlxSprite
 			}
 		}
 
-		if (FlxG.keys.pressed.A || FlxG.keys.pressed.D)
+		if ((FlxG.keys.pressed.A || FlxG.keys.pressed.D) && canMove)
 		{
 			var speed:Float = FlxG.keys.pressed.A ? -maxSpeed : maxSpeed;
 			facing = FlxG.keys.pressed.A ? LEFT : RIGHT;

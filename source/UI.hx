@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxBitmapText;
@@ -8,7 +9,22 @@ import flixel.util.FlxColor;
 
 class UI extends FlxGroup
 {
-	public var life:Float = 90;
+	public var life(default, set):Float = 100;
+
+	inline function set_life(v:Float)
+	{
+		life = FlxMath.bound(v, 0, 100);
+		if (life <= 0)
+		{
+			die();
+		}
+		return life;
+	}
+
+	function die()
+	{
+		FlxG.resetState();
+	}
 
 	public var score:Int = 0;
 

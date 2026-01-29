@@ -12,7 +12,8 @@ class Bone extends FlxSprite
 	{
 		super();
 
-		makeGraphic(20, 10, FlxColor.WHITE);
+		// makeGraphic(20, 10, FlxColor.WHITE);
+		loadGraphic('assets/images/bone.png');
 		// angularVelocity = 100;
 	}
 
@@ -22,7 +23,7 @@ class Bone extends FlxSprite
 	{
 		velocity.x = player.facing == LEFT ? -speed : speed;
 		angularVelocity = player.facing == LEFT ? -speed : speed;
-		setPosition(player.x, player.y);
+		setPosition(player.x, player.y + 20);
 		lifeTime = 4.0;
 	}
 

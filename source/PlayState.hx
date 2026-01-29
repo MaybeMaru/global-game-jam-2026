@@ -75,12 +75,8 @@ class PlayState extends FlxState
 		var background:FlxGroup = new FlxGroup();
 		add(background);
 
-		floor = new FlxSprite(0, 400);
-		floor.makeGraphic(1, 1, 0xff59566a);
-		floor.setGraphicSize(3000, 400);
-		floor.updateHitbox();
-		floor.immovable = true;
-		add(floor);
+		street = new Street();
+		add(street);
 
 		player = new Player();
 		player.x = 400;
@@ -119,13 +115,14 @@ class PlayState extends FlxState
 
 	public var player:Player;
 
-	public var floor:FlxSprite;
+	public var street:Street;
 
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
 
-		FlxG.collide(player, floor);
+		FlxG.collide(player, street.colliders);
+		FlxG.collide(street.kids, street.colliders);
 
 		// die
 		if (FlxG.overlap(darkness, player))

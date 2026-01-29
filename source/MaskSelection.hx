@@ -5,22 +5,32 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
+import flixel.math.FlxPoint;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.util.FlxSpriteUtil;
+import openfl.geom.ColorTransform;
 
 class MaskSelection extends FlxTypedGroup<FlxSprite>
 {
 	var masks:Array<String> = ["skeleton", "clown", "spider", "pumpkin"];
 	var masksTypes:Array<MaskType> = [SKELETON, CLOWN, SPIDER, PUMPKIN];
 
+	var maskSprites:Array<FlxSprite> = [];
+
 	public function new()
 	{
 		super();
+
+		var circle = new FlxSprite().makeGraphic(100, 100, 0);
+		FlxSpriteUtil.drawCircle(circle, circle.width / 2, circle.height / 2, 48, FlxColor.TRANSPARENT, {color: FlxColor.WHITE, thickness: 2});
+		add(circle);
 
 		for (i => mask in masks)
 		{
 			var maskSprite = new FlxSprite().loadGraphic('assets/images/masks/$mask.png');
 			add(maskSprite);
+			maskSprites.push(maskSprite);
 
 			maskSprite.scale.set(1.5, 1.5);
 			maskSprite.updateHitbox();
@@ -38,14 +48,24 @@ class MaskSelection extends FlxTypedGroup<FlxSprite>
 			}
 		}
 
-		for (i in members)
+		circle.x = FlxG.width - circle.width - 12;
+		circle.y = 12;
+
+		// this is some of the shittiest code ive made in my lifetime
+		for (i in maskSprites)
 		{
-			var size = 40;
+			var size = 42;
 			i.x *= size;
 			i.y *= size;
 
-			i.x += FlxG.width - 97;
-			i.y += 12;
+			i.x += FlxG.width - 77;
+			i.y += 6;
+		}
+
+		for (member in members)
+		{
+			member.x -= 6;
+			member.y += 6;
 		}
 
 		/*for (i => mask in masks)
@@ -60,6 +80,28 @@ class MaskSelection extends FlxTypedGroup<FlxSprite>
 
 		changeMask(0);
 		wheelUpdate(1 / 12);
+
+		whiteTransform = new ColorTransform(1, 1, 1, 1, 255, 255, 255, 0);
+	}
+
+	var whiteTransform:ColorTransform;
+
+	override function draw()
+	{
+		var leMask = maskSprites[curMask];
+		var trans = leMask.colorTransform;
+		@:privateAccess leMask.colorTransform = whiteTransform;
+
+		var baseScale = leMask.scale.copyTo(FlxPoint.get());
+
+		leMask.scale.scale(1.1, 1.1);
+		leMask.draw();
+		leMask.scale.copyFrom(baseScale);
+		baseScale.put();
+
+		@:privateAccess leMask.colorTransform = trans;
+
+		super.draw();
 	}
 
 	var curMask:Int = 0;
@@ -126,7 +168,7 @@ class MaskSelection extends FlxTypedGroup<FlxSprite>
 
 	function wheelUpdate(elapsed:Float)
 	{
-		for (i => member in members)
+		for (i => member in maskSprites)
 		{
 			var selected = (i == curMask);
 
