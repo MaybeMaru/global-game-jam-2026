@@ -31,6 +31,7 @@ class Player extends FlxSprite
 
 		pumpkinShadow = new FlxSprite();
 		pumpkinShadow.loadGraphic('assets/images/shadow pumpkin.png');
+		pumpkinShadow.colorTransform.alphaOffset = -255;
 
 		setMaskType(SKELETON);
 	}
@@ -56,7 +57,7 @@ class Player extends FlxSprite
 		pumpkinShadow.draw();
 
 		final inPumpkin = maskType == PUMPKIN;
-		pumpkinShadow.colorTransform.alphaOffset = FlxMath.lerp(pumpkinShadow.colorTransform.alphaOffset, inPumpkin ? (pumpkinActive ? -50 : 0) : -255,
+		pumpkinShadow.colorTransform.alphaOffset = FlxMath.lerp(pumpkinShadow.colorTransform.alphaOffset, inPumpkin ? (pumpkinActive ? -75 : 0) : -255,
 			elapsed * 3);
 
 		if (inPumpkin)
@@ -149,7 +150,9 @@ class Player extends FlxSprite
 
 		velocity.y = FlxMath.lerp(velocity.y, clownActive ? 0 : fallSpeed, elapsed * 5);
 
-		if (FlxG.mouse.justPressedRight)
+		if (FlxG.mouse.justPressedRight
+			|| FlxG.keys.justPressed.SPACE
+			|| (maskType == SPIDER && FlxG.mouse.justPressed)) // remove when i figure out another move for spider
 		{
 			var doJump = floored || (!spiderDoubleJump && maskType == SPIDER);
 			if (doJump)

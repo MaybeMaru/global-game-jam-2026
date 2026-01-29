@@ -1,11 +1,13 @@
 package;
 
+import Mask.MaskType;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.addons.display.FlxBackdrop;
+import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
@@ -31,6 +33,8 @@ class PlayState extends FlxState
 
 		FlxG.mouse.visible = false;
 
+		FlxG.sound.playMusic('assets/music/darkzone.ogg');
+
 		postDraw = new FlxSignal();
 
 		game = this;
@@ -50,9 +54,12 @@ class PlayState extends FlxState
 		back.alpha = 0.2;
 		add(back);
 
+		var background:FlxGroup = new FlxGroup();
+		add(background);
+
 		floor = new FlxSprite(0, 400);
-		floor.makeGraphic(1, 1, FlxColor.GRAY);
-		floor.setGraphicSize(2000, 400);
+		floor.makeGraphic(1, 1, 0xff59566a);
+		floor.setGraphicSize(3000, 400);
 		floor.updateHitbox();
 		floor.immovable = true;
 		add(floor);
@@ -63,13 +70,17 @@ class PlayState extends FlxState
 		add(player);
 
 		darkness = new Darkness();
-		darkness.x = -300;
+		darkness.x = -400;
 		darkness.x -= darkness.width;
 		add(darkness);
 
-		var selector = new MaskSelection();
-		selector.camera = ui;
-		add(selector);
+		var uiStuff = new UI();
+		uiStuff.camera = ui;
+		add(uiStuff);
+
+		var maskTypes:Array<MaskType> = [PUMPKIN, SKELETON, CLOWN, SPIDER];
+		for (i => type in maskTypes)
+			background.add(new House(type, 200 + (i * 450)));
 
 		FlxG.debugger.drawDebug = true;
 
@@ -84,7 +95,7 @@ class PlayState extends FlxState
 
 	public var player:Player;
 
-	var floor:FlxSprite;
+	public var floor:FlxSprite;
 
 	override public function update(elapsed:Float)
 	{

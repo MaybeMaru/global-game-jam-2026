@@ -9,7 +9,7 @@ import flixel.util.FlxColor;
 
 class MaskSelection extends FlxGroup
 {
-	var masks:Array<String> = ["none", "skeleton", "clown", "pumpkin", "spider"];
+	var masks:Array<String> = ["skeleton", "clown", "spider", "pumpkin"];
 
 	public function new()
 	{
@@ -21,6 +21,7 @@ class MaskSelection extends FlxGroup
 			text.size = 16;
 			text.text = mask;
 			text.y = i * 20;
+			text.x = FlxG.width - text.width;
 			add(text);
 		}
 
@@ -67,7 +68,7 @@ class MaskSelection extends FlxGroup
 		{
 			if (wheelTimer <= 0)
 			{
-				wheelTimer = 0.1;
+				wheelTimer = 0.069; // nice
 				if (wheel > 0)
 				{
 					changeMask(-1);

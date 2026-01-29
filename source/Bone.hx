@@ -12,7 +12,7 @@ class Bone extends FlxSprite
 	{
 		super();
 
-		makeGraphic(20, 10, FlxColor.GRAY);
+		makeGraphic(20, 10, FlxColor.WHITE);
 		// angularVelocity = 100;
 	}
 
