@@ -29,9 +29,15 @@ class PlayState extends FlxState
 
 	public var darkness:Darkness;
 
+	public var particles:FlxGroup;
+
+	var pause:Pause;
+
 	override public function create()
 	{
 		super.create();
+
+		destroySubStates = false;
 
 		FlxG.mouse.visible = false;
 
@@ -45,6 +51,9 @@ class PlayState extends FlxState
 		uiCam.bgColor.alpha = 0;
 		FlxG.cameras.add(uiCam, false);
 
+		pause = new Pause();
+		pause.camera = uiCam;
+
 		camera.zoom = 1.25;
 
 		FlxG.worldBounds.set(-9999, -9999, 99999, 99999);
@@ -57,9 +66,10 @@ class PlayState extends FlxState
 		add(back);
 
 		var back2 = new FlxBackdrop(null, X);
+		back2.y = 350;
 		back2.scale.set(8, 8);
-		back.scrollFactor.set(0.75, 0.75);
-		back2.alpha = 0.6;
+		back.scrollFactor.set(0.63, 0.63);
+		back2.alpha = 0.35;
 		add(back2);
 
 		var background:FlxGroup = new FlxGroup();
@@ -77,6 +87,9 @@ class PlayState extends FlxState
 		player.y = 300;
 		add(player);
 
+		particles = new FlxGroup();
+		add(particles);
+
 		darkness = new Darkness();
 		darkness.x = -400;
 		darkness.x -= darkness.width;
@@ -86,7 +99,10 @@ class PlayState extends FlxState
 		ui.camera = uiCam;
 		add(ui);
 
-		var maskTypes:Array<MaskType> = [PUMPKIN, SKELETON, CLOWN, SPIDER];
+		var maskTypes:Array<MaskType> = [
+			PUMPKIN, SKELETON, CLOWN, SPIDER, //
+			PUMPKIN, SKELETON, CLOWN,    SPIDER
+		];
 		for (i => type in maskTypes)
 			background.add(new House(type, 200 + (i * 450)));
 
@@ -115,8 +131,8 @@ class PlayState extends FlxState
 		if (FlxG.overlap(darkness, player))
 			FlxG.resetState();
 
-		if (FlxG.keys.justPressed.R)
-			FlxG.resetGame();
+		if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.ENTER)
+			openSubState(pause);
 	}
 
 	public var postDraw:FlxSignal;

@@ -25,7 +25,7 @@ class UI extends FlxGroup
 		lifeBar.createFilledBar(0xff212121, FlxColor.ORANGE, true, FlxColor.BLACK, 3);
 		lifeBar.x = 6;
 		lifeBar.screenCenter(Y);
-		add(lifeBar);
+		// add(lifeBar);
 
 		scoreText = new FlxBitmapText();
 		scoreText.setPosition(6, 6);
@@ -38,9 +38,18 @@ class UI extends FlxGroup
 		add(selector);
 	}
 
+	override function draw()
+	{
+		super.draw();
+		lifeBar.camera = this.camera;
+		lifeBar.draw();
+	}
+
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		lifeBar.update(elapsed);
 
 		scoreLerp = FlxMath.lerp(scoreLerp, score, elapsed * 6);
 
@@ -53,6 +62,6 @@ class UI extends FlxGroup
 			}
 		}
 
-		scoreText.text = formatShit;
+		scoreText.text = "Candy:\n" + formatShit;
 	}
 }

@@ -29,6 +29,10 @@ class Player extends FlxSprite
 		// FlxSpriteUtil.drawCircle(pumpkinGlow, -1, -1, -1, FlxColor.YELLOW);
 		pumpkinGlow.blend = ADD;
 
+		jumpWeb = new FlxSprite();
+		jumpWeb.alpha = 0.0;
+		jumpWeb.loadGraphic('assets/images/web.png');
+
 		pumpkinShadow = new FlxSprite();
 		pumpkinShadow.loadGraphic('assets/images/shadow pumpkin.png');
 		pumpkinShadow.colorTransform.alphaOffset = -255;
@@ -43,14 +47,22 @@ class Player extends FlxSprite
 	public var projectiles:FlxGroup;
 	public var pumpkinGlow:FlxSprite;
 	public var pumpkinShadow:FlxSprite;
+	public var jumpWeb:FlxSprite;
 
 	override function draw()
 	{
+		final elapsed = FlxG.elapsed;
+
+		// if (maskType == SPIDER)
+		// {
+		jumpWeb.draw();
+		jumpWeb.alpha -= elapsed * 2;
+		// }
+
 		super.draw();
+
 		mask.draw();
 		projectiles.draw();
-
-		final elapsed = FlxG.elapsed;
 
 		pumpkinShadow.x = x + ((width - pumpkinShadow.width) / 2);
 		pumpkinShadow.y = y + ((height - pumpkinShadow.height) / 2);
@@ -118,9 +130,23 @@ class Player extends FlxSprite
 					if (clownActive)
 					{
 						clownY = y;
+						FlxG.sound.play('assets/sounds/inflate.ogg', 0.8);
+					}
+					else
+					{
+						FlxG.sound.play('assets/sounds/deflate.ogg', 0.6);
 					}
 				case PUMPKIN:
 					pumpkinActive = !pumpkinActive;
+
+					if (pumpkinActive)
+					{
+						FlxG.sound.play('assets/sounds/glow.ogg');
+					}
+					else
+					{
+						FlxG.sound.play('assets/sounds/glow.ogg').pitch = 0.8;
+					}
 
 				case SKELETON:
 					if (boneTimer <= 0)
@@ -129,6 +155,7 @@ class Player extends FlxSprite
 						var bone:Bone = cast projectiles.recycle(Bone);
 						bone.prepare(this);
 						projectiles.add(bone);
+						FlxG.sound.play('assets/sounds/bone.ogg').pitch = FlxG.random.float(0.9, 1.1);
 					}
 
 				case SPIDER:
@@ -136,6 +163,9 @@ class Player extends FlxSprite
 		}
 
 		var floored = isTouching(FLOOR);
+
+		if (floored && !wasTouching.hasAny(FLOOR))
+			FlxG.sound.play('assets/sounds/land.wav');
 
 		if (floored)
 		{
@@ -160,7 +190,17 @@ class Player extends FlxSprite
 				velocity.y = -jumpForce;
 
 				if (maskType == SPIDER && !floored)
+				{
+					jumpWeb.x = x + ((width - jumpWeb.width) / 2);
+					jumpWeb.y = y + ((height - jumpWeb.height) / 2);
+					jumpWeb.alpha = 1.0;
+					FlxG.sound.play('assets/sounds/web.ogg');
 					spiderDoubleJump = true;
+				}
+				else
+				{
+					FlxG.sound.play('assets/sounds/jump.wav');
+				}
 			}
 		}
 
