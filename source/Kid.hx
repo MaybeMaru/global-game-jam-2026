@@ -13,12 +13,16 @@ class Kid extends FlxSprite
 {
 	var maskType:MaskType;
 
+	var mask:Mask;
+
 	public function new(maskType:MaskType)
 	{
 		super();
 		makeGraphic(35, 35);
 
 		this.maskType = maskType;
+		mask = new Mask(this);
+		mask.setType(maskType);
 
 		color = switch (maskType)
 		{
@@ -40,6 +44,12 @@ class Kid extends FlxSprite
 	var speed = 200;
 
 	var leCheck:Float = 0.0;
+
+	override function draw()
+	{
+		super.draw();
+		mask.draw();
+	}
 
 	override function update(elapsed:Float)
 	{
@@ -69,6 +79,10 @@ class Kid extends FlxSprite
 				hits--;
 				if (hits < 0)
 				{
+					PlayState.game.ui.score += 25;
+					FlxG.sound.play('assets/sounds/yay.ogg', 0.5);
+					House.explodeCandy(5, this);
+
 					kill();
 					FlxG.sound.play('assets/sounds/explosion.wav');
 				}

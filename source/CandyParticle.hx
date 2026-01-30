@@ -1,6 +1,7 @@
 package;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
 import flixel.util.FlxColor;
@@ -22,11 +23,11 @@ class CandyParticle extends FlxSprite
 
 	var timer:Float = 0.0;
 
-	public function setup(player:Player)
+	public function setup(object:FlxObject)
 	{
 		alpha = 1;
-		x = player.x;
-		y = player.y;
+		x = object.x;
+		y = object.y;
 
 		acceleration.y = FlxG.random.float(1800, 2000);
 		acceleration.x = FlxG.random.float(-100, 100);

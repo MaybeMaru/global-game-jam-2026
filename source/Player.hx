@@ -28,6 +28,7 @@ class Player extends FlxSprite
 		pumpkinGlow = new FlxSprite();
 		pumpkinGlow.loadGraphic('assets/images/pumpkinglow.png');
 		pumpkinGlow.color = FlxColor.YELLOW;
+		pumpkinGlow.colorTransform.alphaOffset = -255;
 		// pumpkinGlow.makeGraphic(100, 100, 0);
 		// FlxSpriteUtil.drawCircle(pumpkinGlow, -1, -1, -1, FlxColor.YELLOW);
 		pumpkinGlow.blend = ADD;
@@ -51,6 +52,8 @@ class Player extends FlxSprite
 	public var pumpkinGlow:FlxSprite;
 	public var pumpkinShadow:FlxSprite;
 	public var jumpWeb:FlxSprite;
+
+	var pumpkinTimer:Float = 0;
 
 	override function draw()
 	{
@@ -77,28 +80,67 @@ class Player extends FlxSprite
 		pumpkinShadow.y = y + ((height - pumpkinShadow.height) / 2);
 		pumpkinShadow.draw();
 
-		final inPumpkin = maskType == PUMPKIN;
-		pumpkinShadow.colorTransform.alphaOffset = FlxMath.lerp(pumpkinShadow.colorTransform.alphaOffset, inPumpkin ? (pumpkinActive ? -75 : 0) : -255,
-			elapsed * 3);
-
-		if (inPumpkin)
+		var inDark = false;
+		for (period in PlayState.game.street.darknessPeriods)
 		{
-			PlayState.game.postDraw.addOnce(() ->
+			if (x >= period.startX && (x + width) <= period.endX)
 			{
-				pumpkinGlow.draw();
-			});
-
-			var showSpeed = pumpkinActive ? 4 : 6;
-
-			pumpkinGlow.colorTransform.alphaOffset = FlxMath.lerp(pumpkinGlow.colorTransform.alphaOffset, pumpkinActive ? 0 : -155, elapsed * showSpeed);
-			// pumpkinGlow.scale.x = FlxMath.lerp(pumpkinGlow.scale.x, pumpkinActive ? 1.0 : 1, elapsed * showSpeed);
-			// pumpkinGlow.scale.y = FlxMath.lerp(pumpkinGlow.scale.y, pumpkinActive ? 1.0 : 1, elapsed * showSpeed);
-
-			pumpkinGlow.updateHitbox();
-
-			pumpkinGlow.x = x + ((width - pumpkinGlow.width) / 2);
-			pumpkinGlow.y = y + ((height - pumpkinGlow.height) / 2);
+				inDark = true;
+				break;
+			}
 		}
+
+		// pumpkinTimer -= elapsed;
+
+		// final inPumpkin = maskType == PUMPKIN;
+
+		pumpkinShadow.colorTransform.alphaOffset = FlxMath.lerp(pumpkinShadow.colorTransform.alphaOffset,
+			inDark ? ((pumpkinActive || pumpkinTimer > 0) ? -100 : 0) : -255, elapsed * (!inDark ? 2 : 1));
+
+		PlayState.game.postDraw.addOnce(() ->
+		{
+			pumpkinGlow.draw();
+		});
+
+		var showSpeed = pumpkinActive ? 4 : 6;
+
+		pumpkinGlow.colorTransform.alphaOffset = FlxMath.lerp(pumpkinGlow.colorTransform.alphaOffset, pumpkinActive ? 0 : -155, elapsed * showSpeed);
+
+		pumpkinGlow.updateHitbox();
+
+		pumpkinGlow.x = x + ((width - pumpkinGlow.width) / 2);
+		pumpkinGlow.y = y + ((height - pumpkinGlow.height) / 2);
+
+		if (inDark)
+		{
+			if (!pumpkinActive)
+			{
+				pumpkinTimer -= elapsed;
+			}
+			else
+			{
+				pumpkinTimer = 5.0;
+			}
+		}
+
+		/*if (inPumpkin)
+			{
+				PlayState.game.postDraw.addOnce(() ->
+				{
+					pumpkinGlow.draw();
+				});
+
+				var showSpeed = pumpkinActive ? 4 : 6;
+
+				pumpkinGlow.colorTransform.alphaOffset = FlxMath.lerp(pumpkinGlow.colorTransform.alphaOffset, pumpkinActive ? 0 : -155, elapsed * showSpeed);
+				// pumpkinGlow.scale.x = FlxMath.lerp(pumpkinGlow.scale.x, pumpkinActive ? 1.0 : 1, elapsed * showSpeed);
+				// pumpkinGlow.scale.y = FlxMath.lerp(pumpkinGlow.scale.y, pumpkinActive ? 1.0 : 1, elapsed * showSpeed);
+
+				pumpkinGlow.updateHitbox();
+
+				pumpkinGlow.x = x + ((width - pumpkinGlow.width) / 2);
+				pumpkinGlow.y = y + ((height - pumpkinGlow.height) / 2);
+		}*/
 	}
 
 	public var clownActive:Bool = false;
@@ -117,7 +159,6 @@ class Player extends FlxSprite
 		clownActive = false;
 
 		pumpkinActive = false;
-		pumpkinGlow.colorTransform.alphaOffset = -255;
 		// pumpkinGlow.scale.set(0.3, 0.3);
 
 		mask.setType(type);
@@ -186,7 +227,7 @@ class Player extends FlxSprite
 				case SKELETON:
 					if (boneTimer <= 0)
 					{
-						boneTimer = 0.25;
+						boneTimer = 0.15;
 						var bone:Bone = cast projectiles.recycle(Bone);
 						bone.prepare(this);
 						projectiles.add(bone);
@@ -252,5 +293,10 @@ class Player extends FlxSprite
 		super.update(elapsed);
 
 		projectiles.update(elapsed);
+
+		if (y >= 450)
+		{
+			PlayState.game.ui.life = 0;
+		}
 	}
 }

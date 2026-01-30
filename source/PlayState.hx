@@ -80,7 +80,8 @@ class PlayState extends FlxState
 		add(street);
 
 		player = new Player();
-		player.x = street.floorY - player.height;
+		player.x = Street.tileSize;
+		player.y = 200;
 		add(player);
 
 		particles = new FlxGroup();
@@ -111,6 +112,19 @@ class PlayState extends FlxState
 
 		FlxG.camera.pixelPerfectRender = true;
 		uiCam.pixelPerfectRender = true;
+	}
+
+	public function endLevel()
+	{
+		uiCam.visible = false;
+		openSubState(new FlxSubState(FlxColor.BLACK));
+		FlxG.sound.music.volume = 0.4;
+		FlxG.sound.music.fadeOut();
+		FlxG.sound.play('assets/sounds/endLevel.wav');
+		FlxG.camera.flash(FlxColor.WHITE, 3, () ->
+		{
+			FlxG.switchState(() -> new MainMenu());
+		});
 	}
 
 	public var player:Player;

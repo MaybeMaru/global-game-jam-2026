@@ -98,12 +98,12 @@ class House extends FlxSprite
 		doorHitbox.draw();
 	}
 
-	function explodeCandy()
+	public static function explodeCandy(amount:Int = 25, ?object:FlxObject)
 	{
-		for (i in 0...10)
+		for (i in 0...amount)
 		{
 			var candy:CandyParticle = cast PlayState.game.particles.recycle(CandyParticle);
-			candy.setup(PlayState.game.player);
+			candy.setup(object ?? PlayState.game.player);
 			PlayState.game.particles.add(candy);
 		}
 	}

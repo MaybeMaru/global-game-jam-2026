@@ -152,11 +152,11 @@ class MaskSelection extends FlxTypedGroup<FlxSprite>
 				wheelTimer = 0.069; // nice
 				if (wheel > 0)
 				{
-					changeMask(-1);
+					changeMask(1);
 				}
 				else if (wheel < 0)
 				{
-					changeMask(1);
+					changeMask(-1);
 				}
 			}
 		}

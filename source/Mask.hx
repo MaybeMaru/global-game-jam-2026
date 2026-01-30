@@ -1,15 +1,16 @@
 package;
 
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 
 class Mask extends FlxSprite
 {
-	var player:Player;
+	var player:FlxSprite;
 
-	public function new(player:Player)
+	public function new(player:FlxSprite)
 	{
 		super();
 		this.player = player;
@@ -19,33 +20,41 @@ class Mask extends FlxSprite
 
 	override function draw()
 	{
-		if (player.maskType == NONE)
-			return;
-
 		final elapsed = FlxG.elapsed;
 
 		x = player.x + ((player.width - width) / 2);
 
-		if (player.canMove)
-			x += player.facing == LEFT ? -10 : 10;
+		if (player is Player)
+		{
+			if (cast(player, Player).canMove)
+				x += player.facing == LEFT ? -10 : 10;
+		}
+		else
+		{
+			x += player.facing == LEFT ? -10 : 10; // kids
+		}
 
 		flipX = player.facing == LEFT;
 		y = player.y - 2;
 
-		if (player.maskType == CLOWN)
+		if (player is Player)
 		{
-			var inflateSpeed = player.clownActive ? 4 : 8;
-			var inflateSize = player.clownActive ? 1.5 : 1.0;
+			var player:Player = cast player;
+			if (player.maskType == CLOWN)
+			{
+				var inflateSpeed = player.clownActive ? 4 : 8;
+				var inflateSize = player.clownActive ? 1.5 : 1.0;
 
-			scale.x = FlxMath.lerp(scale.x, inflateSize, elapsed * inflateSpeed);
-			scale.y = FlxMath.lerp(scale.y, inflateSize, elapsed * inflateSpeed);
+				scale.x = FlxMath.lerp(scale.x, inflateSize, elapsed * inflateSpeed);
+				scale.y = FlxMath.lerp(scale.y, inflateSize, elapsed * inflateSpeed);
 
-			if (player.clownActive)
-				y -= 10;
-		}
-		else
-		{
-			scale.set(1, 1);
+				if (player.clownActive)
+					y -= 10;
+			}
+			else
+			{
+				scale.set(1, 1);
+			}
 		}
 
 		super.draw();
