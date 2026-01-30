@@ -61,9 +61,13 @@ class Player extends FlxSprite
 		jumpWeb.alpha -= elapsed * 2;
 		// }
 
+		if (!canMove)
+			mask.draw();
+
 		super.draw();
 
-		mask.draw();
+		if (canMove)
+			mask.draw();
 		projectiles.draw();
 
 		pumpkinShadow.x = x + ((width - pumpkinShadow.width) / 2);
@@ -121,7 +125,7 @@ class Player extends FlxSprite
 	{
 		boneTimer -= elapsed;
 
-		if (FlxG.mouse.justPressed)
+		if (FlxG.mouse.justPressed && canMove)
 		{
 			switch (maskType)
 			{
@@ -182,9 +186,8 @@ class Player extends FlxSprite
 
 		velocity.y = FlxMath.lerp(velocity.y, clownActive ? 0 : fallSpeed, elapsed * 5);
 
-		if (FlxG.mouse.justPressedRight
-			|| FlxG.keys.justPressed.SPACE
-			|| (maskType == SPIDER && FlxG.mouse.justPressed)) // remove when i figure out another move for spider
+		if ((FlxG.mouse.justPressedRight || FlxG.keys.justPressed.SPACE || (maskType == SPIDER && FlxG.mouse.justPressed))
+			&& canMove) // remove when i figure out another move for spider
 		{
 			var doJump = floored || (!spiderDoubleJump && maskType == SPIDER);
 			if (doJump)

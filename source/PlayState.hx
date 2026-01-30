@@ -13,11 +13,12 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
 
 // TODO
-// selection wheel
-// houses
-// walking kids
-// health/speed bar
-// points candy
+// map view
+// title screen
+// random map generation
+// darkness speed progression
+// death sequence
+// win sequence
 // art
 class PlayState extends FlxState
 {
@@ -68,7 +69,7 @@ class PlayState extends FlxState
 		var back2 = new FlxBackdrop(null, X);
 		back2.y = 350;
 		back2.scale.set(8, 8);
-		back.scrollFactor.set(0.63, 0.63);
+		back2.scrollFactor.set(0.8, 0.8);
 		back2.alpha = 0.35;
 		add(back2);
 

@@ -25,9 +25,12 @@ class Mask extends FlxSprite
 		final elapsed = FlxG.elapsed;
 
 		x = player.x + ((player.width - width) / 2);
-		x += player.facing == LEFT ? -10 : 10;
+
+		if (player.canMove)
+			x += player.facing == LEFT ? -10 : 10;
+
 		flipX = player.facing == LEFT;
-		y = player.y;
+		y = player.y - 2;
 
 		if (player.maskType == CLOWN)
 		{

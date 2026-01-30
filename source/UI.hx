@@ -26,7 +26,12 @@ class UI extends FlxGroup
 		FlxG.resetState();
 	}
 
-	public var score:Int = 0;
+	public var score(default, set):Int = 0;
+
+	inline function set_score(v):Int
+	{
+		return score = FlxMath.maxInt(v, 0);
+	}
 
 	var scoreLerp:Float = 0.0;
 
@@ -39,12 +44,12 @@ class UI extends FlxGroup
 
 		lifeBar = new FlxBar(0, 0, BOTTOM_TO_TOP, 25, 300, this, 'life');
 		lifeBar.createFilledBar(0xff212121, FlxColor.ORANGE, true, FlxColor.BLACK, 3);
-		lifeBar.x = 6;
+		lifeBar.x = 12;
 		lifeBar.screenCenter(Y);
 		// add(lifeBar);
 
 		scoreText = new FlxBitmapText();
-		scoreText.setPosition(6, 6);
+		scoreText.setPosition(12, 12);
 		scoreText.scale.set(3, 3);
 		scoreText.updateHitbox();
 		scoreText.text = "Candy:\n000000";

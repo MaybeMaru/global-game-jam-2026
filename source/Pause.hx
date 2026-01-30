@@ -53,6 +53,7 @@ class Pause extends FlxSubState
 			case 1:
 				FlxG.resetState();
 			case 2:
+				FlxG.switchState(() -> new MainMenu());
 		}
 	}
 

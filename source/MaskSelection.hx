@@ -145,7 +145,7 @@ class MaskSelection extends FlxTypedGroup<FlxSprite>
 
 		wheelTimer -= elapsed;
 
-		if (wheel != 0)
+		if (wheel != 0 && PlayState.game.player.canMove)
 		{
 			if (wheelTimer <= 0)
 			{
@@ -175,9 +175,9 @@ class MaskSelection extends FlxTypedGroup<FlxSprite>
 			member.scale.x = FlxMath.lerp(member.scale.x, selected ? 2.0 : 1.5, elapsed * 12);
 			member.scale.y = member.scale.x;
 
-			member.colorTransform.redOffset = FlxMath.lerp(member.colorTransform.redOffset, selected ? 0 : -150, elapsed * 12);
-			member.colorTransform.greenOffset = member.colorTransform.redOffset;
-			member.colorTransform.blueOffset = member.colorTransform.redOffset;
+			member.colorTransform.blueOffset = FlxMath.lerp(member.colorTransform.blueOffset, selected ? 0 : -150, elapsed * 12) / 1.8;
+			member.colorTransform.greenOffset = member.colorTransform.blueOffset * 4;
+			member.colorTransform.redOffset = member.colorTransform.blueOffset * 4;
 		}
 	}
 }
