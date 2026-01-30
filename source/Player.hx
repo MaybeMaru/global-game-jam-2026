@@ -2,6 +2,7 @@ package;
 
 import Mask.MaskType;
 import flixel.*;
+import flixel.effects.FlxFlicker;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
@@ -60,6 +61,8 @@ class Player extends FlxSprite
 		jumpWeb.draw();
 		jumpWeb.alpha -= elapsed * 2;
 		// }
+
+		mask.alpha = alpha;
 
 		if (!canMove)
 			mask.draw();
@@ -121,9 +124,35 @@ class Player extends FlxSprite
 		maskType = type;
 	}
 
+	var regenTimer:Float = 0.0;
+
+	public function getHurt(severity:Int = 15)
+	{
+		if (regenTimer > 0 && severity < 15)
+			return;
+
+		regenTimer = 1.2;
+		FlxFlicker.stopFlickering(this);
+		FlxFlicker.flicker(this, regenTimer, 0.04, true, true, (tmr) ->
+		{
+			alpha = 1;
+		}, (tmr) ->
+			{
+				alpha = alpha == 1 ? 0 : 1;
+				visible = true;
+			});
+
+		PlayState.game.ui.score -= severity * 4;
+		FlxG.camera.shake(0.01, 0.2);
+		FlxG.sound.play('assets/sounds/explosion.wav');
+
+		PlayState.game.ui.life -= severity;
+	}
+
 	override function update(elapsed:Float)
 	{
 		boneTimer -= elapsed;
+		regenTimer -= elapsed;
 
 		if (FlxG.mouse.justPressed && canMove)
 		{

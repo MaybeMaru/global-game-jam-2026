@@ -39,12 +39,17 @@ class Darkness extends FlxSprite
 			eye.updateHitbox();
 			eye.blend = ADD;
 
+			eye.scrollFactor.y = 0.5;
+
 			eye.offset.set(FlxG.random.int(-30, 150), FlxG.random.int(10, -450));
 		}
 
 		velocity.x = 50;
+		y -= 75;
+		scrollFactor.y = 0;
 
 		gradient = FlxGradient.createGradientFlxSprite(200, 1, [FlxColor.BLACK, FlxColor.BLACK, FlxColor.TRANSPARENT], 1, 0);
+		gradient.scrollFactor.y = 0;
 	}
 
 	override function update(elapsed:Float)
@@ -68,6 +73,18 @@ class Darkness extends FlxSprite
 
 		gradient.updateHitbox();
 
+		var distance = Math.abs(PlayState.game.player.x - (x + width));
+
+		if (distance <= 400)
+		{
+			var v = distance / 400;
+			FlxG.sound.music.pitch = FlxMath.remapToRange(v, 0, 1, 0.3, 1);
+
+			var v = v * 1.5;
+			FlxG.camera.color = FlxColor.fromRGBFloat(v, v, v);
+		}
+		// trace(distance, 100 - distance);
+
 		// this.alpha = 0.2;
 	}
 
@@ -77,6 +94,7 @@ class Darkness extends FlxSprite
 
 		gradient.draw();
 
+		// if (isOnScreen(camera))
 		eyes.draw();
 	}
 }

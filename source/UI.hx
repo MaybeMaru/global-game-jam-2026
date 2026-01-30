@@ -55,6 +55,9 @@ class UI extends FlxGroup
 		scoreText.text = "Candy:\n000000";
 		add(scoreText);
 
+		var levelMap = new LevelMap();
+		add(levelMap);
+
 		var selector = new MaskSelection();
 		add(selector);
 	}

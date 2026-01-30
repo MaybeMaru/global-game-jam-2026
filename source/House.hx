@@ -12,7 +12,7 @@ class House extends FlxSprite
 	var houseType:MaskType;
 	var doorHitbox:FlxObject;
 
-	public function new(type:MaskType, xPos:Float)
+	public function new(type:MaskType, xPos:Float, yPos:Float)
 	{
 		super();
 
@@ -32,8 +32,9 @@ class House extends FlxSprite
 
 		// scrollFactor.x = 0.95;
 
+		updateHitbox();
 		x = xPos;
-		y = PlayState.game.street.floorY - height;
+		y = yPos - height + Street.tileSize; // PlayState.game.street.floorY - height;
 
 		doorHitbox = new FlxObject(0, 0, 100, 70);
 		doorHitbox.y = y + height - doorHitbox.height;
@@ -45,6 +46,9 @@ class House extends FlxSprite
 		super.update(elapsed);
 		doorHitbox.update(elapsed);
 
+		if (decided)
+			return;
+
 		if (FlxG.keys.justPressed.W && PlayState.game.player.canMove)
 		{
 			if (FlxG.overlap(doorHitbox, PlayState.game.player))
@@ -55,8 +59,12 @@ class House extends FlxSprite
 		}
 	}
 
+	var decided:Bool = false;
+
 	function knock()
 	{
+		decided = true;
+
 		var isSameType = houseType == PlayState.game.player.maskType;
 
 		new FlxTimer().start(0.2, (tmr) ->
@@ -111,10 +119,6 @@ class House extends FlxSprite
 
 	function wrongHouse()
 	{
-		PlayState.game.ui.score -= 50;
-		FlxG.camera.shake(0.01, 0.2);
-		FlxG.sound.play('assets/sounds/explosion.wav');
-
-		PlayState.game.ui.life -= 15;
+		PlayState.game.player.getHurt(15);
 	}
 }

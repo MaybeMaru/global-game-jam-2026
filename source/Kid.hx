@@ -11,10 +11,14 @@ using flixel.util.FlxColorTransformUtil;
 
 class Kid extends FlxSprite
 {
+	var maskType:MaskType;
+
 	public function new(maskType:MaskType)
 	{
 		super();
 		makeGraphic(35, 35);
+
+		this.maskType = maskType;
 
 		color = switch (maskType)
 		{
@@ -64,7 +68,10 @@ class Kid extends FlxSprite
 				bone.kill();
 				hits--;
 				if (hits < 0)
+				{
 					kill();
+					FlxG.sound.play('assets/sounds/explosion.wav');
+				}
 			}
 		}
 
@@ -76,5 +83,16 @@ class Kid extends FlxSprite
 		//	velocity.x *= -1;
 
 		super.update(elapsed);
+
+		if (!alive)
+			return;
+
+		if (FlxG.overlap(this, PlayState.game.player))
+		{
+			if (maskType != PlayState.game.player.maskType)
+			{
+				PlayState.game.player.getHurt(7);
+			}
+		}
 	}
 }

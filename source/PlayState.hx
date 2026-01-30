@@ -6,6 +6,7 @@ import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.FlxSubState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxGroup;
 import flixel.text.FlxText;
@@ -13,7 +14,6 @@ import flixel.util.FlxColor;
 import flixel.util.FlxSignal;
 
 // TODO
-// map view
 // title screen
 // random map generation
 // darkness speed progression
@@ -66,22 +66,21 @@ class PlayState extends FlxState
 		back.alpha = 0.2;
 		add(back);
 
-		var back2 = new FlxBackdrop(null, X);
-		back2.y = 350;
-		back2.scale.set(8, 8);
-		back2.scrollFactor.set(0.8, 0.8);
-		back2.alpha = 0.35;
-		add(back2);
+		// var back2 = new FlxBackdrop(null, X);
+		// back2.y = 350;
+		// back2.scale.set(8, 8);
+		// back2.scrollFactor.set(0.8, 0.8);
+		// back2.alpha = 0.35;
+		// add(back2);
 
-		var background:FlxGroup = new FlxGroup();
-		add(background);
+		// var background:FlxGroup = new FlxGroup();
+		// add(background);
 
 		street = new Street();
 		add(street);
 
 		player = new Player();
-		player.x = 400;
-		player.y = 300;
+		player.x = street.floorY - player.height;
 		add(player);
 
 		particles = new FlxGroup();
@@ -100,12 +99,12 @@ class PlayState extends FlxState
 			PUMPKIN, SKELETON, CLOWN, SPIDER, //
 			PUMPKIN, SKELETON, CLOWN,    SPIDER
 		];
-		for (i => type in maskTypes)
-			background.add(new House(type, 200 + (i * 450)));
+		// for (i => type in maskTypes)
+		//	background.add(new House(type, 200 + (i * 450)));
 
 		FlxG.debugger.drawDebug = true;
 
-		FlxG.camera.maxScrollY = 450;
+		FlxG.camera.maxScrollY = 350;
 		FlxG.camera.targetOffset.set(50, 0);
 		// FlxG.camera.followLead.x = 2;
 		FlxG.camera.follow(player, PLATFORMER);
@@ -127,7 +126,14 @@ class PlayState extends FlxState
 
 		// die
 		if (FlxG.overlap(darkness, player))
-			FlxG.resetState();
+		{
+			openSubState(new FlxSubState());
+			FlxG.camera.fade(FlxColor.BLACK, 1);
+			FlxG.sound.music.fadeOut(1, 0, (twn) ->
+			{
+				FlxG.resetState();
+			});
+		}
 
 		if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.ENTER)
 			openSubState(pause);

@@ -31,6 +31,11 @@ class Bone extends FlxSprite
 	{
 		super.update(elapsed);
 
+		if (!isOnScreen())
+		{
+			lifeTime = 0;
+		}
+
 		lifeTime -= elapsed;
 		if (lifeTime <= 0)
 			kill();
