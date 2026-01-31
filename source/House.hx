@@ -19,22 +19,36 @@ class House extends FlxSprite
 		houseType = type;
 
 		// makeGraphic(200, 200);
-		loadGraphic('assets/images/house.png');
+		// loadGraphic('assets/images/house.png');
 
-		color = switch (type)
+		loadGraphic('assets/images/houses.png', true, 250, 223);
+
+		switch (type)
 		{
-			case NONE: FlxColor.WHITE;
-			case SKELETON: FlxColor.GRAY;
-			case PUMPKIN: FlxColor.ORANGE;
-			case SPIDER: FlxColor.PURPLE;
-			case CLOWN: FlxColor.RED;
+			case NONE:
+			case CLOWN:
+				animation.add("open", [0]);
+				animation.add("closed", [1]);
+			case SKELETON:
+				animation.add("open", [2]);
+				animation.add("closed", [3]);
+			case PUMPKIN:
+				animation.add("open", [4]);
+				animation.add("closed", [5]);
+			case SPIDER:
+				animation.add("open", [6]);
+				animation.add("closed", [7]);
 		}
+
+		animation.play("open");
 
 		// scrollFactor.x = 0.95;
 
 		updateHitbox();
 		x = xPos;
 		y = yPos - height + Street.tileSize; // PlayState.game.street.floorY - height;
+
+		offset.x += 15;
 
 		doorHitbox = new FlxObject(0, 0, 100, 70);
 		doorHitbox.y = y + height - doorHitbox.height;
@@ -66,15 +80,19 @@ class House extends FlxSprite
 		decided = true;
 
 		var isSameType = houseType == PlayState.game.player.maskType;
+		PlayState.game.player.animation.play('knock');
 
 		new FlxTimer().start(0.2, (tmr) ->
 		{
 			FlxG.camera.shake(0.003, 0.05);
 			FlxG.sound.play('assets/sounds/knock.wav');
+			PlayState.game.player.animation.play('knock');
+
 			if (tmr.loopsLeft <= 0)
 			{
 				new FlxTimer().start(0.4, (tmr) ->
 				{
+					animation.play("closed");
 					if (isSameType)
 					{
 						goodHouse();
@@ -82,6 +100,7 @@ class House extends FlxSprite
 					}
 					else
 					{
+						PlayState.game.player.animation.play('hurt');
 						wrongHouse();
 						FlxG.camera.flash(0xffff0000);
 						@:privateAccess FlxG.camera._fxFlashAlpha = 0.2;

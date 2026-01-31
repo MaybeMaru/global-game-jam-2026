@@ -296,9 +296,15 @@ class Street extends FlxGroup
 
 	static final maskTypes:Array<MaskType> = [SKELETON, PUMPKIN, SPIDER, CLOWN];
 
+	var _lastType:MaskType = NONE;
+
 	function randomMaskType()
 	{
-		return maskTypes[FlxG.random.int(0, maskTypes.length - 1)];
+		var getMask = _lastType;
+		while (getMask == _lastType)
+			getMask = maskTypes[FlxG.random.int(0, maskTypes.length - 1)];
+		_lastType = getMask;
+		return getMask;
 	}
 
 	public var darknessPeriods:Array<{startX:Float, endX:Float}> = [];
@@ -418,13 +424,15 @@ class Street extends FlxGroup
 					case "0": // air
 					case "1":
 						var collider = new FlxSprite().makeGraphic(tileSize, tileSize, 0xff59566a);
+						collider.moves = false;
+						// collider.active = false;
 						collider.x = xPos;
 						collider.y = yPos;
 						collider.immovable = true;
 						colliders.add(collider);
 						chunk.add(collider);
 					case "2": // kid
-						addKid(randomMaskType(), xPos, yPos);
+						addKid(randomMaskType(), xPos, yPos, chunk);
 					case "3": // house
 						var house = new House(randomMaskType(), xPos - (flipped ? tileSize * 4 : 0), yPos);
 						houses.add(house);
@@ -504,9 +512,9 @@ class Street extends FlxGroup
 		generateLevel(curLevel);
 	}
 
-	function addKid(type:MaskType, x:Float, y:Float)
+	function addKid(type:MaskType, x:Float, y:Float, chunk:Chunk)
 	{
-		var kid = new Kid(type);
+		var kid = new Kid(type, chunk);
 		kid.setPosition(x, y);
 		kids.add(kid);
 	}
@@ -554,21 +562,27 @@ class Chunk extends FlxGroup
 
 	var _rect:FlxRect;
 
-	var _isOnScreen:Bool = false;
+	public var _isOnScreen:Bool = false;
 
 	override function update(elapsed:Float)
 	{
-		_rect.copyFrom(bounds);
-		_rect.x -= camera.scroll.x;
-		_rect.y -= camera.scroll.y;
+		/*_rect.copyFrom(bounds);
+			_rect.x -= camera.scroll.x;
+			_rect.y -= camera.scroll.y;
 
-		_isOnScreen = camera.containsRect(_rect);
+			_isOnScreen = camera.containsRect(_rect); */
+		_isOnScreen = true;
 		if (_isOnScreen)
 			super.update(elapsed);
 	}
 
 	override function draw()
 	{
+		_rect.copyFrom(bounds);
+		_rect.x -= camera.scroll.x;
+		_rect.y -= camera.scroll.y;
+
+		_isOnScreen = camera.containsRect(_rect);
 		if (_isOnScreen)
 			super.draw();
 	}

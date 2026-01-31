@@ -1,6 +1,7 @@
 package;
 
 import Mask.MaskType;
+import Street.Chunk;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.tweens.FlxTween;
@@ -14,11 +15,14 @@ class Kid extends FlxSprite
 	var maskType:MaskType;
 
 	var mask:Mask;
+	var chunk:Chunk;
 
-	public function new(maskType:MaskType)
+	public function new(maskType:MaskType, chunk:Chunk)
 	{
 		super();
 		makeGraphic(35, 35);
+
+		this.chunk = chunk;
 
 		this.maskType = maskType;
 		mask = new Mask(this);
@@ -47,12 +51,18 @@ class Kid extends FlxSprite
 
 	override function draw()
 	{
+		if (!chunk._isOnScreen)
+			return;
+
 		super.draw();
 		mask.draw();
 	}
 
 	override function update(elapsed:Float)
 	{
+		if (!chunk._isOnScreen)
+			return;
+
 		leCheck -= elapsed;
 		if (leCheck <= 0.0 && (isTouching(LEFT) || isTouching(RIGHT)))
 		{

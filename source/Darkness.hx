@@ -50,8 +50,8 @@ class Darkness extends FlxSprite
 		x -= width;
 
 		// exponentially make it harder
-		velocity.x = 40;
-		FlxTween.tween(velocity, {x: PlayState.game.curLevel == 0 ? 75 : 250}, PlayState.game.street.levelLength / 130, {ease: FlxEase.quadIn});
+		velocity.x = 25;
+		FlxTween.tween(velocity, {x: PlayState.game.curLevel == 0 ? 75 : 250}, PlayState.game.street.levelLength / 120, {ease: FlxEase.quadIn});
 
 		y -= 75;
 		scrollFactor.y = 0;

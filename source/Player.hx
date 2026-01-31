@@ -19,7 +19,26 @@ class Player extends FlxSprite
 	{
 		super();
 
-		makeGraphic(25, 50, 0xffada87f);
+		// makeGraphic(25, 50, 0xffada87f);
+
+		loadGraphic('assets/images/masker.png', true, 45, 52);
+
+		animation.add('idle', [0], 12);
+		animation.add('jump', [1, 2], 12);
+		animation.add('fall', [3, 4], 12);
+		animation.add('walk', [5, 6, 7, 6], 12);
+		animation.add('shoot', [8, 9], 12);
+		animation.add('knock', [10], 12);
+		animation.add('hurt', [11, 12], 12);
+
+		animation.play('idle');
+
+		setSize(25, 50);
+		offset.x = 10;
+		// offset.x = 20;
+
+		setFacingFlip(LEFT, true, false);
+		setFacingFlip(RIGHT, false, false);
 
 		projectiles = new FlxGroup();
 
@@ -190,6 +209,8 @@ class Player extends FlxSprite
 		PlayState.game.ui.life -= severity;
 	}
 
+	var lastY:Float = 9999;
+
 	override function update(elapsed:Float)
 	{
 		boneTimer -= elapsed;
@@ -240,6 +261,15 @@ class Player extends FlxSprite
 
 		var floored = isTouching(FLOOR);
 
+		if (!floored)
+		{
+			if (y > lastY)
+				animation.play('fall');
+			else
+				animation.play('jump');
+			lastY = y;
+		}
+
 		if (floored && !wasTouching.hasAny(FLOOR))
 			FlxG.sound.play('assets/sounds/land.wav');
 
@@ -283,12 +313,19 @@ class Player extends FlxSprite
 		{
 			var speed:Float = FlxG.keys.pressed.A ? -maxSpeed : maxSpeed;
 			facing = FlxG.keys.pressed.A ? LEFT : RIGHT;
+			if (floored)
+				animation.play('walk');
 			velocity.x = FlxMath.lerp(velocity.x, speed, elapsed * 10);
 		}
 		else
 		{
+			if (floored && canMove)
+				animation.play('idle');
 			velocity.x = FlxMath.lerp(velocity.x, 0.0, elapsed * 10);
 		}
+
+		if (boneTimer > 0)
+			animation.play('shoot');
 
 		super.update(elapsed);
 

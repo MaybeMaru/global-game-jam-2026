@@ -11,6 +11,7 @@ import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxGroup;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
 import flixel.util.FlxSignal;
 
 // TODO
@@ -63,22 +64,71 @@ class PlayState extends FlxState
 
 		FlxG.worldBounds.set(-9999, -9999, 99999, 99999);
 
-		var back = new FlxBackdrop();
-		back.scale.set(10, 10);
-		back.scrollFactor.set(0.5, 0.5);
-		back.velocity.set(50, 50);
-		back.alpha = 0.2;
-		add(back);
+		var backgradient = FlxGradient.createGradientFlxSprite(1, 300, [0xff000000, 0xff320843]);
+		add(backgradient);
 
-		// var back2 = new FlxBackdrop(null, X);
-		// back2.y = 350;
-		// back2.scale.set(8, 8);
-		// back2.scrollFactor.set(0.8, 0.8);
-		// back2.alpha = 0.35;
-		// add(back2);
+		backgradient.scale.x = FlxG.width;
+		backgradient.scrollFactor.x = 0;
+		backgradient.scrollFactor.y = 0.2;
+		backgradient.updateHitbox();
 
-		// var background:FlxGroup = new FlxGroup();
-		// add(background);
+		var stars = new FlxBackdrop('assets/images/stars.png', X);
+		stars.y = 25;
+		stars.scrollFactor.set(0.03, 0.03);
+		stars.alpha = 0.3;
+		stars.blend = ADD;
+		add(stars);
+
+		var stars = new FlxBackdrop('assets/images/stars.png', X);
+		stars.y = 75;
+		stars.scrollFactor.set(0.045, 0.045);
+		stars.alpha = 0.6;
+		stars.flipX = true;
+		stars.blend = ADD;
+		add(stars);
+
+		var stars = new FlxBackdrop('assets/images/stars.png', X);
+		stars.y = 125;
+		stars.scrollFactor.set(0.06, 0.06);
+		stars.blend = ADD;
+		add(stars);
+
+		var moon = new FlxSprite(400, 50).loadGraphic('assets/images/moon.png');
+		moon.color = FlxColor.GRAY;
+		moon.blend = ADD;
+		moon.scrollFactor.set(0.005, 0.005);
+		add(moon);
+
+		var city = new FlxBackdrop('assets/images/buildings.png', X);
+		city.y = 125;
+		city.color = 0xff1b123a;
+		city.scrollFactor.set(0.1, 0.1);
+		city.flipX = true;
+		add(city);
+
+		var trees = new FlxBackdrop('assets/images/trees.png', X);
+		trees.y = 210;
+		trees.color = 0xff594898;
+		trees.scrollFactor.set(0.15, 0.15);
+		add(trees);
+
+		var city = new FlxBackdrop('assets/images/buildings.png', X);
+		city.y = 150;
+		city.color = 0xff594898;
+		city.scrollFactor.set(0.2, 0.2);
+		add(city);
+
+		var trees = new FlxBackdrop('assets/images/trees.png', X);
+		trees.y = 240;
+		trees.color = 0xff9f8fd9;
+		trees.scrollFactor.set(0.3, 0.3);
+		add(trees);
+
+		var trees = new FlxBackdrop('assets/images/trees.png', X);
+		trees.y = 260;
+		// trees.color = 0xff9f8fd9;
+		trees.scrollFactor.set(0.45, 0.45);
+		add(trees);
 
 		street = new Street(curLevel);
 		add(street);
