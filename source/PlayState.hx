@@ -15,8 +15,6 @@ import flixel.util.FlxSignal;
 
 // TODO
 // title screen
-// random map generation
-// darkness speed progression
 // death sequence
 // win sequence
 // art
@@ -33,6 +31,14 @@ class PlayState extends FlxState
 	public var particles:FlxGroup;
 
 	var pause:Pause;
+
+	public var curLevel:Int = 0;
+
+	public function new(isTutorial:Bool)
+	{
+		super();
+		curLevel = isTutorial ? 0 : 1;
+	}
 
 	override public function create()
 	{
@@ -76,7 +82,7 @@ class PlayState extends FlxState
 		// var background:FlxGroup = new FlxGroup();
 		// add(background);
 
-		street = new Street();
+		street = new Street(curLevel);
 		add(street);
 
 		player = new Player();
@@ -88,8 +94,6 @@ class PlayState extends FlxState
 		add(particles);
 
 		darkness = new Darkness();
-		darkness.x = -400;
-		darkness.x -= darkness.width;
 		add(darkness);
 
 		ui = new UI();

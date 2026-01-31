@@ -42,7 +42,7 @@ class MainMenu extends FlxState
 			selected = true;
 			FlxG.camera.fade(FlxColor.BLACK, 0.2, false, () ->
 			{
-				FlxG.switchState(() -> new PlayState());
+				FlxG.switchState(() -> new PlayState(true));
 			});
 		}
 	}

@@ -2,9 +2,14 @@ import Mask.MaskType;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
+import flixel.text.FlxText;
+import flixel.util.FlxColor;
 
 enum MapTileType
 {
+	TUTORIAL;
+	BASIC_STREET_1;
+	BASIC_STREET_2;
 	HALL_2;
 	HALL_4;
 	HALL_8;
@@ -36,6 +41,24 @@ class Street extends FlxGroup
 	public var colliders:FlxGroup;
 
 	static final tiles:Map<MapTileType, MapTile> = [
+		BASIC_STREET_1 => {
+			tiles: [
+				//
+				"00000300000000", //
+				"11111111111111", //
+				"11111111111111", //
+				"11111111111111"
+			]
+		},
+		BASIC_STREET_2 => {
+			tiles: [
+				//
+				"10000003002001", //
+				"11111111111111", //
+				"11111111111111", //
+				"11111111111111"
+			]
+		},
 		HALL_2 => {
 			tiles: [
 				//
@@ -185,8 +208,8 @@ class Street extends FlxGroup
 				"10000000000000000000", //
 				"00000000000012300001", //
 				"00000000000011111111", //
-				"00011100000000000001", //
-				"00000000000000000001", //
+				"00011100000000000000", //
+				"00000000000000000000", //
 				"00000000000000000001", //
 				"00000001000200000011", //
 				"11111111111111111111", //
@@ -249,6 +272,20 @@ class Street extends FlxGroup
 				"11111111111111111111", //
 				"11111111111111111111"
 			]
+		},
+		TUTORIAL => {
+			tiles: [
+				"0000a00000000000000000000b000000000000c0000000000000d0000000000000000000000e", //
+				"0000000000000000000000000000000000000000000000000000x00000000000000000000x00", //
+				"0000000000000000000000000000000000000000000000000000000000000003000000000000", //
+				"0000000000000000000000000000000000000000000300000000000000000011111110000000", //
+				"0000000000000000000000000000000000000000001111111000000000000000000000000000", //
+				"0000000000000000000000000000000000000000001111111000000010000000000000000000", //
+				"0000100000200200200000100000000000000000001111111000000010001000200200011000", //
+				"1111111111111111111111111111100000000111111111111111111111111111111111111111", //
+				"1111111111111111111111111111100000000111111111111111111111111111111111111111", //
+				"1111111111111111111111111111100000000111111111111111111111111111111111111111", //
+			]
 		}
 	];
 
@@ -265,10 +302,14 @@ class Street extends FlxGroup
 
 	public var darknessPeriods:Array<{startX:Float, endX:Float}> = [];
 
-	public function generateLevel(chunksLength:Int)
+	public function generateLevel(levelIndex:Int)
 	{
-		// addTile(HALL_14);
-		// addTile(HALL_8);
+		var chunksLength:Int = -1;
+		switch (levelIndex)
+		{
+			case 1:
+				chunksLength = 16;
+		}
 
 		FlxG.camera.minScrollX = -100;
 		addWall(-100, -300);
@@ -276,6 +317,8 @@ class Street extends FlxGroup
 		darknessPeriods.resize(0);
 
 		var leTiles:Array<MapTileType> = [
+			BASIC_STREET_1,
+			BASIC_STREET_2,
 			SKELETON_1,
 			SKELETON_2,
 			SKELETON_3,
@@ -288,35 +331,49 @@ class Street extends FlxGroup
 		];
 
 		// tutorial part
-		addTile(HALL_14);
+		addTile(HALL_8);
 
 		// randomized part
-		var lastTile:MapTileType = null;
-		var randoTile = () -> leTiles[FlxG.random.int(0, leTiles.length - 1)];
-
-		for (i in 0...chunksLength)
+		if (chunksLength > 0)
 		{
-			var newTile:MapTileType = randoTile();
-			while (newTile == lastTile)
-				newTile = randoTile();
+			var lastTile:MapTileType = null;
+			var randoTile = () -> leTiles[FlxG.random.int(0, leTiles.length - 1)];
 
-			var doDarkness = FlxG.random.bool(10);
-			var darknessObject:{startX:Float, endX:Float} = null;
-			if (doDarkness)
+			for (i in 0...chunksLength)
 			{
-				darknessObject = {startX: curX, endX: 0}
+				var newTile:MapTileType = randoTile();
+				while (newTile == lastTile)
+					newTile = randoTile();
+
+				var doDarkness = FlxG.random.bool(10);
+				var darknessObject:{startX:Float, endX:Float} = null;
+				if (doDarkness)
+				{
+					darknessObject = {startX: curX, endX: 0}
+				}
+
+				addTile(newTile, FlxG.random.bool());
+				addTile(FlxG.random.bool() ? HALL_2 : HALL_4);
+
+				if (doDarkness)
+				{
+					darknessObject.endX = curX;
+					darknessPeriods.push(darknessObject);
+				}
+
+				lastTile = newTile;
 			}
-
-			addTile(newTile, FlxG.random.bool());
-			addTile(FlxG.random.bool() ? HALL_2 : HALL_4);
-
-			if (doDarkness)
-			{
-				darknessObject.endX = curX;
-				darknessPeriods.push(darknessObject);
-			}
-
-			lastTile = newTile;
+		}
+		else
+		{
+			addTile(BASIC_STREET_1);
+			addTutorialText('Change your mask to the appropiate of\nthis home and press "W" to knock the door.', curX - 475);
+			addTile(HALL_4);
+			addTile(BASIC_STREET_2);
+			addTutorialText('Kids of your same mask type wont hurt you.', curX - 550);
+			addTile(HALL_4);
+			addTile(TUTORIAL);
+			// addTile(SKELETON_1);
 		}
 
 		addTile(HALL_14);
@@ -338,6 +395,8 @@ class Street extends FlxGroup
 		var width = tile.tiles[0].length;
 		var height = tile.tiles.length;
 
+		var openShadowX:Float = -1;
+
 		for (y in 0...height)
 		{
 			for (x in 0...width)
@@ -348,24 +407,48 @@ class Street extends FlxGroup
 				var yPos = (y * tileSize) - ((height) * tileSize) + floorY;
 
 				var tileLine = tile.tiles[y];
-				var tile = Std.parseInt(tileLine.charAt(flipped ? (tileLine.length - 1 - x) : x));
+				var tile = tileLine.charAt(flipped ? (tileLine.length - 1 - x) : x);
 
 				// var tile = tile.tiles[index];
 
 				switch (tile)
 				{
-					case 0: // air
-					case 1:
+					case "0": // air
+					case "1":
 						var collider = new FlxSprite().makeGraphic(tileSize, tileSize, 0xff59566a);
 						collider.x = xPos;
 						collider.y = yPos;
 						collider.immovable = true;
 						colliders.add(collider);
-					case 2: // kid
+					case "2": // kid
 						addKid(randomMaskType(), xPos, yPos);
-					case 3: // house
+					case "3": // house
 						var house = new House(randomMaskType(), xPos - (flipped ? tileSize * 4 : 0), yPos);
 						houses.add(house);
+					case "x":
+						if (openShadowX == -1)
+						{
+							openShadowX = xPos;
+						}
+						else
+						{
+							darknessPeriods.push({
+								startX: openShadowX,
+								endX: xPos
+							});
+							openShadowX = -1;
+						}
+
+					case "a":
+						addTutorialText("Use the SKELETON mask\nto shoot bones.", xPos - 200);
+					case "b":
+						addTutorialText("Use the CLOWN mask\nto float through gaps.", xPos - 75);
+					case "c":
+						addTutorialText("Use the SPIDER mask\nto double jump obstacles.", xPos - 75);
+					case "d":
+						addTutorialText("Use the PUMPKIN mask\nto brighten the world.", xPos - 100);
+					case "e":
+						addTutorialText("Jump in to the portal\nto finish the level.", xPos + 200);
 				}
 			}
 		}
@@ -373,7 +456,20 @@ class Street extends FlxGroup
 		curX += tileSize * width;
 	}
 
-	public function new()
+	function addTutorialText(text:String, x:Float)
+	{
+		var tutor = new FlxText();
+		tutor.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
+		tutor.alignment = CENTER;
+		tutor.size = 16;
+		tutor.text = text;
+		add(tutor);
+
+		tutor.x = x;
+		tutor.y = 75;
+	}
+
+	public function new(curLevel:Int)
 	{
 		super();
 
@@ -387,7 +483,8 @@ class Street extends FlxGroup
 		add(kids);
 
 		// tutorial, 8, 14
-		generateLevel(14);
+
+		generateLevel(curLevel);
 
 		/*var floor = new FlxSprite(0, floorY);
 			floor.makeGraphic(1, 1, 0xff59566a);

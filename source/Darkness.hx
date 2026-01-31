@@ -5,6 +5,8 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxGroup;
 import flixel.math.FlxMath;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
 
@@ -44,7 +46,13 @@ class Darkness extends FlxSprite
 			eye.offset.set(FlxG.random.int(-30, 150), FlxG.random.int(10, -450));
 		}
 
-		velocity.x = 50;
+		x = PlayState.game.curLevel == 0 ? -600 : -500;
+		x -= width;
+
+		// exponentially make it harder
+		velocity.x = 40;
+		FlxTween.tween(velocity, {x: PlayState.game.curLevel == 0 ? 75 : 250}, PlayState.game.street.levelLength / 130, {ease: FlxEase.quadIn});
+
 		y -= 75;
 		scrollFactor.y = 0;
 

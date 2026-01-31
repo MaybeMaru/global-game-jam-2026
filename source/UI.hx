@@ -30,13 +30,17 @@ class UI extends FlxGroup
 
 	inline function set_score(v):Int
 	{
-		return score = FlxMath.maxInt(v, 0);
+		v = FlxMath.maxInt(v, 0);
+		// candyTint.setTint(v / 500);
+		return score = v;
 	}
 
 	var scoreLerp:Float = 0.0;
 
 	var scoreText:FlxBitmapText;
 	var lifeBar:FlxBar;
+
+	// var candyTint:Tint;
 
 	public function new()
 	{
@@ -48,12 +52,17 @@ class UI extends FlxGroup
 		lifeBar.screenCenter(Y);
 		// add(lifeBar);
 
+		// candyTint = new Tint();
+
 		scoreText = new FlxBitmapText();
 		scoreText.setPosition(12, 12);
 		scoreText.scale.set(3, 3);
 		scoreText.updateHitbox();
 		scoreText.text = "Candy:\n000000";
 		add(scoreText);
+
+		// scoreText.color = 0xffffb6b6;
+		// scoreText.shader = candyTint.shader;
 
 		var levelMap = new LevelMap();
 		add(levelMap);
