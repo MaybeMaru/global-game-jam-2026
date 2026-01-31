@@ -2,6 +2,7 @@ import Mask.MaskType;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.group.FlxGroup;
+import flixel.math.FlxRect;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 
@@ -390,6 +391,7 @@ class Street extends FlxGroup
 
 	public function addTile(type:MapTileType, flipped:Bool = false)
 	{
+		var chunk = new Chunk();
 		var tile = tiles.get(type);
 
 		var width = tile.tiles[0].length;
@@ -420,6 +422,7 @@ class Street extends FlxGroup
 						collider.y = yPos;
 						collider.immovable = true;
 						colliders.add(collider);
+						chunk.add(collider);
 					case "2": // kid
 						addKid(randomMaskType(), xPos, yPos);
 					case "3": // house
@@ -453,7 +456,11 @@ class Street extends FlxGroup
 			}
 		}
 
-		curX += tileSize * width;
+		final chunkWidth = tileSize * width;
+		chunk.bounds.set(curX, -300, chunkWidth, 2000);
+		chunks.add(chunk);
+
+		curX += chunkWidth;
 	}
 
 	function addTutorialText(text:String, x:Float)
@@ -469,6 +476,9 @@ class Street extends FlxGroup
 		tutor.y = 75;
 	}
 
+	public var chunks:FlxTypedGroup<Chunk>;
+	public var bigChunk:FlxGroup;
+
 	public function new(curLevel:Int)
 	{
 		super();
@@ -477,7 +487,14 @@ class Street extends FlxGroup
 		add(houses);
 
 		colliders = new FlxGroup();
-		add(colliders);
+		// colliders.visible = false;
+		// add(colliders);
+
+		bigChunk = new FlxGroup();
+		add(bigChunk);
+
+		chunks = new FlxTypedGroup<Chunk>();
+		add(chunks);
 
 		kids = new FlxGroup();
 		add(kids);
@@ -485,33 +502,6 @@ class Street extends FlxGroup
 		// tutorial, 8, 14
 
 		generateLevel(curLevel);
-
-		/*var floor = new FlxSprite(0, floorY);
-			floor.makeGraphic(1, 1, 0xff59566a);
-			floor.setGraphicSize(4000, 400);
-			floor.updateHitbox();
-			floor.immovable = true;
-			colliders.add(floor);
-
-			var wall = new FlxSprite(0, -300);
-			wall.makeGraphic(1, 1, 0xff59566a);
-			wall.setGraphicSize(100, 1000);
-			wall.updateHitbox();
-			wall.immovable = true;
-			colliders.add(wall);
-
-			var wall = new FlxSprite(floor.width - wall.width, -300);
-			wall.makeGraphic(1, 1, 0xff59566a);
-			wall.setGraphicSize(100, 1000);
-			wall.updateHitbox();
-			wall.immovable = true;
-			colliders.add(wall);
-
-			addWall(500, floorY - 50);
-
-			addKid(700, floorY - 100);
-
-			addWall(800, floorY - 50); */
 	}
 
 	function addKid(type:MaskType, x:Float, y:Float)
@@ -528,6 +518,58 @@ class Street extends FlxGroup
 		wall.setGraphicSize(100, 1000);
 		wall.updateHitbox();
 		wall.immovable = true;
-		colliders.add(wall);
+		// colliders.add(wall);
+		bigChunk.add(wall);
+	}
+
+	override function update(elapsed:Float)
+	{
+		super.update(elapsed);
+
+		colliders.members.resize(0);
+
+		for (member in bigChunk.members)
+			colliders.members.push(member);
+
+		for (chunk in chunks)
+		{
+			@:privateAccess
+			if (chunk._isOnScreen)
+				colliders.members.push(chunk);
+		}
+	}
+}
+
+class Chunk extends FlxGroup
+{
+	public function new()
+	{
+		super();
+
+		bounds = FlxRect.get();
+		_rect = FlxRect.get();
+	}
+
+	public var bounds:FlxRect;
+
+	var _rect:FlxRect;
+
+	var _isOnScreen:Bool = false;
+
+	override function update(elapsed:Float)
+	{
+		_rect.copyFrom(bounds);
+		_rect.x -= camera.scroll.x;
+		_rect.y -= camera.scroll.y;
+
+		_isOnScreen = camera.containsRect(_rect);
+		if (_isOnScreen)
+			super.update(elapsed);
+	}
+
+	override function draw()
+	{
+		if (_isOnScreen)
+			super.draw();
 	}
 }

@@ -19,13 +19,15 @@ class MainMenu extends FlxState
 		add(title);
 
 		var play:FlxText = new FlxText();
-		play.text = "Press Any Button To Start";
+		play.text = "Press Enter To Start";
 		play.size = 18;
 		play.screenCenter();
 		play.y += 60;
 		add(play);
 
 		FlxG.camera.fade(FlxColor.BLACK, 0.2, true);
+
+		FlxG.sound.playMusic('assets/music/menu scary halloween boo.ogg');
 	}
 
 	var selected = false;
@@ -37,12 +39,12 @@ class MainMenu extends FlxState
 		if (selected)
 			return;
 
-		if (FlxG.keys.justPressed.ANY)
+		if (FlxG.keys.justPressed.ENTER)
 		{
 			selected = true;
 			FlxG.camera.fade(FlxColor.BLACK, 0.2, false, () ->
 			{
-				FlxG.switchState(() -> new PlayState(true));
+				FlxG.switchState(() -> new PlayState(false));
 			});
 		}
 	}

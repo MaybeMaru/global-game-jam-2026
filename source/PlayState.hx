@@ -48,8 +48,6 @@ class PlayState extends FlxState
 
 		FlxG.mouse.visible = false;
 
-		FlxG.sound.playMusic('assets/music/darkzone.ogg');
-
 		postDraw = new FlxSignal();
 
 		game = this;
@@ -116,6 +114,8 @@ class PlayState extends FlxState
 
 		FlxG.camera.pixelPerfectRender = true;
 		uiCam.pixelPerfectRender = true;
+
+		FlxG.sound.playMusic('assets/music/level.ogg');
 	}
 
 	public function endLevel()
