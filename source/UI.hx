@@ -101,7 +101,7 @@ class UI extends FlxGroup
 
 		scoreLerp = FlxMath.lerp(scoreLerp, score, elapsed * 6);
 
-		var formatShit:String = Std.string(Std.int(scoreLerp));
+		var formatShit:String = Std.string(Std.int(Math.ceil(scoreLerp)));
 		for (i in 0...6)
 		{
 			if (formatShit.length < 6)

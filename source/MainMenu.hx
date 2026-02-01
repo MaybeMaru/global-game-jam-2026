@@ -8,6 +8,7 @@ import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.util.FlxSave;
 
 class MainMenu extends FlxState
 {
@@ -21,6 +22,9 @@ class MainMenu extends FlxState
 	override function create()
 	{
 		super.create();
+
+		FlxG.save.bind('CandyMaskerSaveData');
+		FlxG.save.data.bestScore ??= 0;
 
 		/*var title:FlxText = new FlxText();
 			title.text = "Candy Masker";
@@ -63,13 +67,22 @@ class MainMenu extends FlxState
 		credits.alignment = RIGHT;
 		credits.size = 18;
 		credits.font = 'assets/data/headstone.ttf';
-		// credits.screenCenter();
 		credits.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
-		// credits.y += 170;
 		add(credits);
 
 		credits.x = FlxG.width - credits.width - 2;
 		credits.y = FlxG.height - credits.height - 2;
+
+		var bestScore = new FlxText();
+		bestScore.text = "Best Score: " + FlxG.save.data.bestScore;
+		bestScore.alignment = RIGHT;
+		bestScore.size = 18;
+		// bestScore.font = 'assets/data/headstone.ttf';
+		bestScore.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
+		add(bestScore);
+
+		bestScore.x = 2;
+		bestScore.y = FlxG.height - bestScore.height - 2;
 
 		FlxG.camera.fade(FlxColor.BLACK, 0.2, true, null, true);
 

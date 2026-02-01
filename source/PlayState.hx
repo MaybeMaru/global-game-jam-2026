@@ -174,11 +174,8 @@ class PlayState extends FlxState
 		}
 		else
 		{
-			FlxG.sound.playMusic('assets/music/game loop i think.ogg', 1.0, false);
-			FlxG.sound.music.onComplete = () ->
-			{
-				FlxG.sound.music.play(true, 20209.90);
-			}
+			FlxG.sound.playMusic('assets/music/game loop i think.ogg', 1.0, true);
+			FlxG.sound.music.loopTime = 20209.90;
 		}
 
 		uiCam.fade(FlxColor.BLACK, 0.4, true);
@@ -230,6 +227,9 @@ class PlayState extends FlxState
 
 			// FlxG.switchState(() -> new MainMenu());
 		});
+
+		FlxG.save.data.bestScore = FlxMath.maxInt(FlxG.save.data.bestScore, ui.score);
+		FlxG.save.flush();
 	}
 
 	public var player:Player;

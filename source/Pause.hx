@@ -22,7 +22,7 @@ class Pause extends FlxSubState
 			leItem.size = 30;
 			leItem.text = item;
 			leItem.setBorderStyle(OUTLINE, FlxColor.BLACK, 3);
-			leItem.font = 'headstone.ttf';
+			leItem.font = 'assets/data/headstone.ttf';
 			add(leItem);
 
 			leItem.screenCenter();
