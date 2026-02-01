@@ -17,10 +17,12 @@ class Kid extends FlxSprite
 	var mask:Mask;
 	var chunk:Chunk;
 
+	var canDie:Bool = true;
+
 	public function new(maskType:MaskType, chunk:Chunk)
 	{
 		super();
-		makeGraphic(35, 35);
+		// makeGraphic(35, 35);
 
 		this.chunk = chunk;
 
@@ -28,19 +30,37 @@ class Kid extends FlxSprite
 		mask = new Mask(this);
 		mask.setType(maskType);
 
-		color = switch (maskType)
+		loadGraphic('assets/images/kid.png', true, 52, 50);
+
+		if (FlxG.random.bool(0.1) && PlayState.game.curLevel > 0)
 		{
-			case NONE: FlxColor.WHITE;
-			case SKELETON: FlxColor.GRAY;
-			case PUMPKIN: FlxColor.ORANGE;
-			case SPIDER: FlxColor.PURPLE;
-			case CLOWN: FlxColor.RED;
+			loadGraphic('assets/images/kidtrans.png', true, 52, 50);
+			canDie = false;
 		}
+
+		animation.add('run', [0, 1, 2], 12);
+		animation.play('run');
+
+		width = 35;
+		height = 35;
+
+		offset.y = 15;
+
+		/*color = switch (maskType)
+			{
+				case NONE: FlxColor.WHITE;
+				case SKELETON: FlxColor.GRAY;
+				case PUMPKIN: FlxColor.ORANGE;
+				case SPIDER: FlxColor.PURPLE;
+				case CLOWN: FlxColor.RED;
+		}*/
 
 		velocity.y = 400;
 		// velocity.x = 50;
 
 		facing = FlxG.random.bool() ? RIGHT : LEFT;
+		setFacingFlip(LEFT, false, false);
+		setFacingFlip(RIGHT, true, false);
 	}
 
 	var hits:Int = 3;
@@ -74,30 +94,31 @@ class Kid extends FlxSprite
 			leCheck = 0.1;
 		}
 
-		for (bone in PlayState.game.player.projectiles)
-		{
-			if (FlxG.overlap(bone, this))
+		if (canDie)
+			for (bone in PlayState.game.player.projectiles)
 			{
-				FlxTween.cancelTweensOf(colorTransform);
-
-				colorTransform.setOffsets(150, 150, 150);
-				FlxTween.tween(colorTransform, {redOffset: 0, greenOffset: 0, blueOffset: 0}, 0.1);
-
-				FlxG.sound.play('assets/sounds/damageEnemy.wav');
-
-				bone.kill();
-				hits--;
-				if (hits < 0)
+				if (FlxG.overlap(bone, this))
 				{
-					PlayState.game.ui.score += 25;
-					FlxG.sound.play('assets/sounds/yay.ogg', 0.5);
-					House.explodeCandy(5, this);
+					FlxTween.cancelTweensOf(colorTransform);
 
-					kill();
-					FlxG.sound.play('assets/sounds/explosion.wav');
+					colorTransform.setOffsets(150, 150, 150);
+					FlxTween.tween(colorTransform, {redOffset: 0, greenOffset: 0, blueOffset: 0}, 0.1);
+
+					FlxG.sound.play('assets/sounds/damageEnemy.wav');
+
+					bone.kill();
+					hits--;
+					if (hits < 0)
+					{
+						PlayState.game.ui.score += 25;
+						FlxG.sound.play('assets/sounds/yay.ogg', 0.5);
+						House.explodeCandy(5, this);
+
+						kill();
+						FlxG.sound.play('assets/sounds/explosion.wav');
+					}
 				}
 			}
-		}
 
 		velocity.x = (facing == LEFT) ? -speed : speed;
 

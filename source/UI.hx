@@ -11,10 +11,12 @@ class UI extends FlxGroup
 {
 	public var life(default, set):Float = 100;
 
+	var dead:Bool = false;
+
 	inline function set_life(v:Float)
 	{
 		life = FlxMath.bound(v, 0, 100);
-		if (life <= 0)
+		if (life <= 0 && !dead)
 		{
 			die();
 		}
@@ -23,7 +25,19 @@ class UI extends FlxGroup
 
 	function die()
 	{
-		FlxG.resetState();
+		dead = true;
+		FlxG.sound.music.fadeOut(0.2);
+		FlxG.sound.play('assets/sounds/maybe death.ogg').onComplete = () ->
+		{
+			PlayState.game.uiCam.fade(FlxColor.BLACK, 1, false, () ->
+			{
+				FlxG.resetState();
+			});
+		};
+
+		PlayState.game.player.canMove = false;
+		PlayState.game.player.y = 1000;
+		PlayState.game.player.visible = false;
 	}
 
 	public var score(default, set):Int = 0;

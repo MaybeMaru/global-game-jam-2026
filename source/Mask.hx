@@ -23,6 +23,8 @@ class Mask extends FlxSprite
 		final elapsed = FlxG.elapsed;
 
 		x = player.x + ((player.width - width) / 2);
+		flipX = player.facing == LEFT;
+		y = player.y - 2;
 
 		if (player is Player)
 		{
@@ -31,11 +33,9 @@ class Mask extends FlxSprite
 		}
 		else
 		{
-			x += player.facing == LEFT ? -10 : 10; // kids
+			x += player.facing == LEFT ? -5 : 20; // kids
+			y -= 11;
 		}
-
-		flipX = player.facing == LEFT;
-		y = player.y - 2;
 
 		if (player is Player)
 		{

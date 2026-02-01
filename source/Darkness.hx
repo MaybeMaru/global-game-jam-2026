@@ -81,16 +81,6 @@ class Darkness extends FlxSprite
 
 		gradient.updateHitbox();
 
-		var distance = Math.abs(PlayState.game.player.x - (x + width));
-
-		if (distance <= 400)
-		{
-			var v = distance / 400;
-			FlxG.sound.music.pitch = FlxMath.remapToRange(v, 0, 1, 0.3, 1);
-
-			var v = v * 1.5;
-			FlxG.camera.color = FlxColor.fromRGBFloat(v, v, v);
-		}
 		// trace(distance, 100 - distance);
 
 		// this.alpha = 0.2;

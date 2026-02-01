@@ -9,10 +9,13 @@ import flixel.FlxState;
 import flixel.FlxSubState;
 import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxGroup;
+import flixel.math.FlxMath;
 import flixel.text.FlxText;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxGradient;
 import flixel.util.FlxSignal;
+import flixel.util.FlxTimer;
 
 // TODO
 // title screen
@@ -93,7 +96,7 @@ class PlayState extends FlxState
 		stars.blend = ADD;
 		add(stars);
 
-		var moon = new FlxSprite(400, 50).loadGraphic('assets/images/moon.png');
+		var moon = new FlxSprite(500, 65).loadGraphic('assets/images/moon.png');
 		moon.color = FlxColor.GRAY;
 		moon.blend = ADD;
 		moon.scrollFactor.set(0.005, 0.005);
@@ -165,7 +168,36 @@ class PlayState extends FlxState
 		FlxG.camera.pixelPerfectRender = true;
 		uiCam.pixelPerfectRender = true;
 
-		FlxG.sound.playMusic('assets/music/level.ogg');
+		if (curLevel == 0)
+		{
+			FlxG.sound.playMusic('assets/music/tutorial song.ogg', 1.0, true);
+		}
+		else
+		{
+			FlxG.sound.playMusic('assets/music/game loop i think.ogg', 1.0, false);
+			FlxG.sound.music.onComplete = () ->
+			{
+				FlxG.sound.music.play(true, 20209.90);
+			}
+		}
+
+		uiCam.fade(FlxColor.BLACK, 0.4, true);
+
+		var coolText = new FlxText();
+		coolText.size = 40;
+		coolText.text = curLevel == 0 ? "Tutorial" : "Level 1";
+		coolText.setBorderStyle(OUTLINE, FlxColor.BLACK, 4);
+		coolText.camera = uiCam;
+		add(coolText);
+
+		FlxTween.tween(coolText.scale, {x: 0.8, y: 0.8}, 3, {
+			onUpdate: (twn) ->
+			{
+				coolText.updateHitbox();
+				coolText.screenCenter();
+			}
+		});
+		FlxTween.tween(coolText, {alpha: 0}, 1, {startDelay: 2});
 	}
 
 	public function endLevel()
@@ -174,16 +206,55 @@ class PlayState extends FlxState
 		openSubState(new FlxSubState(FlxColor.BLACK));
 		FlxG.sound.music.volume = 0.4;
 		FlxG.sound.music.fadeOut();
+		// FlxG.sound.music.stop();
+		// FlxG.sound.music.volume = 0;
 		FlxG.sound.play('assets/sounds/endLevel.wav');
 		FlxG.camera.flash(FlxColor.WHITE, 3, () ->
 		{
-			FlxG.switchState(() -> new MainMenu());
+			if (curLevel == 0)
+			{
+				FlxG.switchState(() -> new PlayState(false));
+			}
+			else
+			{
+				FlxG.switchState(() -> new MainMenu());
+			}
+
+			// curLevel++;
+
+			///if (curLevel == 1)
+			// {
+			//	FlxG.switchState(() -> new PlayState(false));
+			// }
+
+			// FlxG.switchState(() -> new MainMenu());
 		});
 	}
 
 	public var player:Player;
 
 	public var street:Street;
+
+	override function tryUpdate(elapsed:Float)
+	{
+		var musicPitch:Float = subState != null ? 0.8 : 1.0;
+
+		var distance = Math.abs(player.x - (darkness.x + darkness.width));
+
+		if (distance <= 400)
+		{
+			var v = distance / 400;
+			musicPitch *= FlxMath.remapToRange(v, 0, 1, 0.3, 1);
+
+			var v = v * 1.5;
+			FlxG.camera.color = FlxColor.fromRGBFloat(v, v, v);
+			uiCam.color = FlxColor.fromRGBFloat(v, v, v);
+		}
+
+		FlxG.sound.music.pitch = FlxMath.lerp(FlxG.sound.music.pitch, musicPitch, elapsed * 4);
+
+		super.tryUpdate(elapsed);
+	}
 
 	override public function update(elapsed:Float)
 	{
@@ -196,10 +267,10 @@ class PlayState extends FlxState
 		if (FlxG.overlap(darkness, player))
 		{
 			openSubState(new FlxSubState());
-			FlxG.camera.fade(FlxColor.BLACK, 1);
+			uiCam.fade(FlxColor.BLACK, 1);
 			FlxG.sound.music.fadeOut(1, 0, (twn) ->
 			{
-				FlxG.resetState();
+				FlxTimer.wait(0.4, () -> FlxG.resetState());
 			});
 		}
 
