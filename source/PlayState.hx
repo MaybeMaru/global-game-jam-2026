@@ -129,7 +129,7 @@ class PlayState extends FlxState
 
 		var trees = new FlxBackdrop('assets/images/trees.png', X);
 		trees.y = 260;
-		// trees.color = 0xff9f8fd9;
+		trees.color = 0xffd9d2f4;
 		trees.scrollFactor.set(0.45, 0.45);
 		add(trees);
 
@@ -184,8 +184,9 @@ class PlayState extends FlxState
 		uiCam.fade(FlxColor.BLACK, 0.4, true);
 
 		var coolText = new FlxText();
-		coolText.size = 40;
-		coolText.text = curLevel == 0 ? "Tutorial" : "Level 1";
+		coolText.font = 'assets/data/headstone.ttf';
+		coolText.size = 60;
+		coolText.text = curLevel == 0 ? "Tutorial" : "Level ONE";
 		coolText.setBorderStyle(OUTLINE, FlxColor.BLACK, 4);
 		coolText.camera = uiCam;
 		add(coolText);

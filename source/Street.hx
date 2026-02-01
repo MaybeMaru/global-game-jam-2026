@@ -1,6 +1,7 @@
 import Mask.MaskType;
 import flixel.FlxG;
 import flixel.FlxSprite;
+import flixel.addons.display.FlxBackdrop;
 import flixel.group.FlxGroup;
 import flixel.math.FlxRect;
 import flixel.text.FlxText;
@@ -374,7 +375,7 @@ class Street extends FlxGroup
 		else
 		{
 			addTile(BASIC_STREET_1);
-			addTutorialText('Change your mask to the appropiate of\nthis home and press "W" to knock the door.', curX - 475);
+			addTutorialText('Change your mask to the appropiate of\nthis home and press "W" to knock the door.', curX - 425);
 			addTile(HALL_4);
 			addTile(BASIC_STREET_2);
 			addTutorialText('Kids of your same mask type wont hurt you.', curX - 550);
@@ -487,9 +488,10 @@ class Street extends FlxGroup
 	function addTutorialText(text:String, x:Float)
 	{
 		var tutor = new FlxText();
+		tutor.font = 'assets/data/headstone.ttf';
 		tutor.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
 		tutor.alignment = CENTER;
-		tutor.size = 16;
+		tutor.size = 20;
 		tutor.text = text;
 		add(tutor);
 
@@ -511,11 +513,11 @@ class Street extends FlxGroup
 		// colliders.visible = false;
 		// add(colliders);
 
-		bigChunk = new FlxGroup();
-		add(bigChunk);
-
 		chunks = new FlxTypedGroup<Chunk>();
 		add(chunks);
+
+		bigChunk = new FlxGroup();
+		add(bigChunk);
 
 		kids = new FlxGroup();
 		add(kids);
@@ -534,14 +536,25 @@ class Street extends FlxGroup
 
 	function addWall(x:Float, y:Float)
 	{
-		var wall = new FlxSprite(x, y);
+		// var wall = new FlxSprite(x, y);
 		// wall.makeGraphic(1, 1, 0xff59566a);
 		// wall.setGraphicSize(100, 1000);
-		wall.loadGraphic('assets/images/wall.png');
+		// wall.loadGraphic('assets/images/wall.png');
+		// wall.updateHitbox();
+		// wall.immovable = true;
+		// colliders.add(wall);
+
+		var wall = new FlxSprite(x, y, 'assets/images/bounds trees.png');
 		wall.updateHitbox();
 		wall.immovable = true;
-		// colliders.add(wall);
+		colliders.add(wall);
 		bigChunk.add(wall);
+
+		if (x > 0)
+		{
+			wall.flipX = true;
+			wall.offset.x += 10;
+		}
 	}
 
 	override function update(elapsed:Float)
@@ -550,15 +563,15 @@ class Street extends FlxGroup
 
 		colliders.members.resize(0);
 
-		for (member in bigChunk.members)
-			colliders.members.push(member);
-
 		for (chunk in chunks)
 		{
 			@:privateAccess
 			if (chunk._isOnScreen)
 				colliders.members.push(chunk);
 		}
+
+		for (member in bigChunk.members)
+			colliders.members.push(member);
 	}
 }
 

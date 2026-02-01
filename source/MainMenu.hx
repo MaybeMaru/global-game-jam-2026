@@ -16,6 +16,8 @@ class MainMenu extends FlxState
 	var title:FlxSprite;
 	var play:FlxText;
 
+	var guy:FlxSprite;
+
 	override function create()
 	{
 		super.create();
@@ -27,6 +29,14 @@ class MainMenu extends FlxState
 			title.y -= 60;
 			add(title) */
 
+		bgColor = 0xff0d090d;
+
+		guy = new FlxSprite().loadGraphic('assets/images/title guy.png');
+		guy.scale.set(2.5, 2.5);
+		guy.updateHitbox();
+		guy.screenCenter();
+		add(guy);
+
 		title = new FlxSprite().loadGraphic('assets/images/logo.png');
 		title.scale.set(2.5, 2.5);
 		title.updateHitbox();
@@ -34,12 +44,32 @@ class MainMenu extends FlxState
 		title.y -= 60;
 		add(title);
 
+		guy.x -= 110;
+		guy.y += 20;
+		title.x += 120;
+
 		play = new FlxText();
 		play.text = "Press Enter To Start";
-		play.size = 18;
+		play.size = 26;
+		play.font = 'assets/data/headstone.ttf';
 		play.screenCenter();
-		play.y += 170;
+		play.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
+
+		play.y += 150;
 		add(play);
+
+		var credits = new FlxText();
+		credits.text = "Art & Programming by MaybeMaru\nMusic & Sounds by thisaintcub";
+		credits.alignment = RIGHT;
+		credits.size = 18;
+		credits.font = 'assets/data/headstone.ttf';
+		// credits.screenCenter();
+		credits.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
+		// credits.y += 170;
+		add(credits);
+
+		credits.x = FlxG.width - credits.width - 2;
+		credits.y = FlxG.height - credits.height - 2;
 
 		FlxG.camera.fade(FlxColor.BLACK, 0.2, true, null, true);
 
@@ -55,6 +85,8 @@ class MainMenu extends FlxState
 		super.update(elapsed);
 
 		title.offset.y = FlxMath.fastSin(FlxG.game.ticks / 600) * 4;
+
+		camera.zoom = FlxMath.remapToRange(FlxMath.fastCos(FlxG.game.ticks / 1000), -1, 1, 0.99, 1.01);
 
 		if (selected)
 			return;

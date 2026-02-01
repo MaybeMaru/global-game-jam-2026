@@ -11,7 +11,11 @@ class EndPortal extends FlxSprite
 	{
 		super();
 
-		makeGraphic(50, 150, FlxColor.MAGENTA);
+		// makeGraphic(50, 150, FlxColor.MAGENTA);
+
+		loadGraphic('assets/images/portal.png', true, 50, 150);
+		animation.add('idle', [0, 1, 2], 6);
+		animation.play('idle');
 	}
 
 	var passed:Bool = false;

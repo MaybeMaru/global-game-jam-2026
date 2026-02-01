@@ -69,6 +69,7 @@ class UI extends FlxGroup
 		// candyTint = new Tint();
 
 		scoreText = new FlxBitmapText();
+		scoreText.setBorderStyle(OUTLINE, FlxColor.BLACK, 1);
 		scoreText.setPosition(12, 12);
 		scoreText.scale.set(3, 3);
 		scoreText.updateHitbox();

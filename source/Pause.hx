@@ -19,16 +19,20 @@ class Pause extends FlxSubState
 		for (i => item in items)
 		{
 			var leItem = new FlxText();
-			leItem.size = 24;
+			leItem.size = 30;
 			leItem.text = item;
+			leItem.setBorderStyle(OUTLINE, FlxColor.BLACK, 3);
+			leItem.font = 'headstone.ttf';
 			add(leItem);
 
 			leItem.screenCenter();
 			leItem.y += i * 50;
+			leItem.y -= 50;
 		}
 
 		openCallback = () ->
 		{
+			didSelect = false;
 			index = 0;
 			changeSelect(0);
 		}
@@ -46,16 +50,21 @@ class Pause extends FlxSubState
 
 	function doSelection()
 	{
+		didSelect = true;
 		switch (index)
 		{
 			case 0:
 				close();
 			case 1:
-				FlxG.resetState();
+				FlxG.sound.music.fadeOut(0.3);
+				PlayState.game.uiCam.fade(FlxColor.BLACK, 0.3, false, () -> FlxG.resetState());
 			case 2:
-				FlxG.switchState(() -> new MainMenu());
+				FlxG.sound.music.fadeOut(0.3);
+				PlayState.game.uiCam.fade(FlxColor.BLACK, 0.3, false, () -> FlxG.switchState(() -> new MainMenu()));
 		}
 	}
+
+	var didSelect = false;
 
 	override function update(elapsed:Float)
 	{
@@ -66,6 +75,9 @@ class Pause extends FlxSubState
 			close();
 			return;
 		}
+
+		if (didSelect)
+			return;
 
 		if (FlxG.keys.justPressed.W || FlxG.keys.justPressed.UP)
 			changeSelect(-1);

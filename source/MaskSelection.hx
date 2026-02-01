@@ -22,8 +22,11 @@ class MaskSelection extends FlxTypedGroup<FlxSprite>
 	{
 		super();
 
-		var circle = new FlxSprite().makeGraphic(100, 100, 0);
-		FlxSpriteUtil.drawCircle(circle, circle.width / 2, circle.height / 2, 48, FlxColor.TRANSPARENT, {color: FlxColor.WHITE, thickness: 2});
+		var circle = new FlxSprite().makeGraphic(Std.int(100 / 3), Std.int(100 / 3), 0);
+		FlxSpriteUtil.drawCircle(circle, circle.width / 2, circle.height / 2, 48 / 3, FlxColor.TRANSPARENT, {color: FlxColor.WHITE, thickness: 2},
+			{smoothing: false});
+		circle.scale.set(3, 3);
+		circle.updateHitbox();
 		add(circle);
 
 		for (i => mask in masks)
