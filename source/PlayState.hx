@@ -17,11 +17,6 @@ import flixel.util.FlxGradient;
 import flixel.util.FlxSignal;
 import flixel.util.FlxTimer;
 
-// TODO
-// title screen
-// death sequence
-// win sequence
-// art
 class PlayState extends FlxState
 {
 	public static var game:PlayState;

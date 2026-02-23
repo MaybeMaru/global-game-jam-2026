@@ -109,31 +109,18 @@ class MaskSelection extends FlxTypedGroup<FlxSprite>
 
 	var curMask:Int = 0;
 
+	function setMask(id:Int)
+	{
+		id = FlxMath.wrap(id, 0, masks.length - 1);
+		if (id != curMask)
+			FlxG.sound.play('assets/sounds/change.wav');
+		curMask = id;
+		PlayState.game.player.setMaskType(masksTypes[curMask]);
+	}
+
 	function changeMask(change:Int)
 	{
-		if (change != 0)
-			FlxG.sound.play('assets/sounds/change.wav');
-
-		curMask += change;
-		curMask = FlxMath.wrap(curMask, 0, masks.length - 1);
-
-		/*for (i in 0...members.length)
-			{
-				var guh:FlxSprite = cast members[i];
-				guh.color = i == curMask ? FlxColor.YELLOW : FlxColor.WHITE;
-		}*/
-
-		PlayState.game.player.setMaskType(masksTypes[curMask]);
-
-		/*PlayState.game.player.setMaskType(switch (masks[curMask])
-			{
-				case "none": NONE;
-				case "skeleton": SKELETON;
-				case "pumpkin": PUMPKIN;
-				case "spider": SPIDER;
-				case "clown": CLOWN;
-				default: NONE; // invalid
-		});*/
+		setMask(curMask + change);
 	}
 
 	var wheelTimer:Float = 0.0;
@@ -142,13 +129,27 @@ class MaskSelection extends FlxTypedGroup<FlxSprite>
 	{
 		super.update(elapsed);
 
+		var canChangeMask = (PlayState.game.ui.life > 0) && PlayState.game.player.canMove;
+
+		if (canChangeMask)
+		{
+			if (FlxG.keys.justPressed.UP)
+				setMask(0);
+			if (FlxG.keys.justPressed.RIGHT)
+				setMask(1);
+			if (FlxG.keys.justPressed.DOWN)
+				setMask(2);
+			if (FlxG.keys.justPressed.LEFT)
+				setMask(3);
+		}
+
 		var wheel = FlxG.mouse.wheel;
 
 		// trace(wheel);
 
 		wheelTimer -= elapsed;
 
-		if (wheel != 0 && PlayState.game.player.canMove)
+		if (wheel != 0 && canChangeMask)
 		{
 			if (wheelTimer <= 0)
 			{

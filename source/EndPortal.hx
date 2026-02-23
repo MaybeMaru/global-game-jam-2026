@@ -32,4 +32,24 @@ class EndPortal extends FlxSprite
 			passed = true;
 		}
 	}
+
+	override function draw()
+	{
+		var sine = FlxMath.remapToRange(FlxMath.fastSin(FlxG.game.ticks / 400), -1, 1, 1.05, 1.2);
+		alpha = FlxMath.remapToRange(FlxMath.fastCos(FlxG.game.ticks / 300), -1, 1, 0.6, 1.0);
+		blend = ADD;
+		scale.set(sine, sine);
+		super.draw();
+
+		alpha = 1.0;
+		blend = NORMAL;
+		scale.set(1, 1);
+		super.draw();
+
+		var cos = FlxMath.remapToRange(FlxMath.fastCos(FlxG.game.ticks / 300), -1, 1, 1.05, 1.2);
+		alpha = FlxMath.remapToRange(FlxMath.fastSin(FlxG.game.ticks / 600), -1, 1, 0.6, 0.9);
+		blend = ADD;
+		scale.set(cos, cos);
+		super.draw();
+	}
 }

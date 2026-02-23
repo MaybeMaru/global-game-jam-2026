@@ -5,6 +5,8 @@ import flixel.FlxSprite;
 import flixel.FlxSubState;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 
 class Pause extends FlxSubState
@@ -16,6 +18,8 @@ class Pause extends FlxSubState
 	{
 		super(0x91000000);
 
+		var objects:Array<FlxText> = [];
+
 		for (i => item in items)
 		{
 			var leItem = new FlxText();
@@ -25,6 +29,7 @@ class Pause extends FlxSubState
 			leItem.font = 'assets/data/headstone.ttf';
 			add(leItem);
 
+			objects.push(leItem);
 			leItem.screenCenter();
 			leItem.y += i * 50;
 			leItem.y -= 50;
@@ -35,6 +40,13 @@ class Pause extends FlxSubState
 			didSelect = false;
 			index = 0;
 			changeSelect(0);
+
+			for (i => item in objects)
+			{
+				item.offset.y = 200;
+				FlxTween.cancelTweensOf(item.offset);
+				FlxTween.tween(item.offset, {y: 0}, 0.3 + (i / 10), {ease: FlxEase.backOut});
+			}
 		}
 	}
 

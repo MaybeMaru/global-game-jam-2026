@@ -216,7 +216,9 @@ class Player extends FlxSprite
 		boneTimer -= elapsed;
 		regenTimer -= elapsed;
 
-		if (FlxG.mouse.justPressed && canMove)
+		var doAction = (FlxG.mouse.justPressed || FlxG.keys.justPressed.Q);
+
+		if (doAction && canMove)
 		{
 			switch (maskType)
 			{
@@ -286,7 +288,7 @@ class Player extends FlxSprite
 
 		velocity.y = FlxMath.lerp(velocity.y, clownActive ? 0 : fallSpeed, elapsed * 5);
 
-		if ((FlxG.mouse.justPressedRight || FlxG.keys.justPressed.SPACE || (maskType == SPIDER && FlxG.mouse.justPressed))
+		if ((FlxG.mouse.justPressedRight || FlxG.keys.justPressed.SPACE || (maskType == SPIDER && doAction))
 			&& canMove) // remove when i figure out another move for spider
 		{
 			var doJump = floored || (!spiderDoubleJump && maskType == SPIDER);
