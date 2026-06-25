@@ -4,6 +4,7 @@ import Mask.MaskType;
 import flixel.FlxG;
 import flixel.FlxObject;
 import flixel.FlxSprite;
+import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 
@@ -49,6 +50,7 @@ class House extends FlxSprite
 		y = yPos - height + Street.tileSize; // PlayState.game.street.floorY - height;
 
 		offset.x += 15;
+		offset.y -= 2;
 
 		doorHitbox = new FlxObject(0, 0, 100, 70);
 		doorHitbox.y = y + height - doorHitbox.height;
@@ -139,5 +141,22 @@ class House extends FlxSprite
 	function wrongHouse()
 	{
 		PlayState.game.player.getHurt(15);
+
+		var wrong:FlxText = cast PlayState.game.particles.recycle(FlxText);
+		wrong.font = 'assets/data/headstone.ttf';
+		wrong.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
+		wrong.alignment = CENTER;
+		wrong.size = 20;
+		wrong.text = "Wrong Mask";
+		wrong.color = 0xffff5959;
+		wrong.revive();
+
+		wrong.setPosition(PlayState.game.player.x - (wrong.width - PlayState.game.player.width) / 2, PlayState.game.player.y - 30);
+
+		wrong.moves = true;
+		wrong.active = true;
+		wrong.velocity.y = -150;
+		wrong.velocity.x = FlxG.random.float(1.0, 5.0) * (FlxG.random.bool() ? -1 : 1);
+		wrong.acceleration.y = 500;
 	}
 }

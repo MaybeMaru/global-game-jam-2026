@@ -8,6 +8,7 @@ import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
+import flixel.util.FlxGradient;
 import flixel.util.FlxSave;
 
 class MainMenu extends FlxState
@@ -34,6 +35,13 @@ class MainMenu extends FlxState
 			add(title) */
 
 		bgColor = 0xff0d090d;
+
+		var bg = FlxGradient.createGradientFlxSprite(1, FlxG.height, [0xff463C6C, 0xff1C182B]);
+		bg.antialiasing = true;
+		bg.scale.x = FlxG.width;
+		bg.updateHitbox();
+		bg.scrollFactor.set();
+		add(bg);
 
 		guy = new FlxSprite().loadGraphic('assets/images/title guy.png');
 		guy.scale.set(2.5, 2.5);
@@ -99,7 +107,9 @@ class MainMenu extends FlxState
 
 		title.offset.y = FlxMath.fastSin(FlxG.game.ticks / 600) * 4;
 
-		camera.zoom = FlxMath.remapToRange(FlxMath.fastCos(FlxG.game.ticks / 1000), -1, 1, 0.99, 1.01);
+		// camera.zoom = FlxMath.remapToRange(FlxMath.fastCos(FlxG.game.ticks / 1000), -1, 1, 0.99, 1.01);
+		var scale = FlxMath.remapToRange(FlxMath.fastCos(FlxG.game.ticks / 1000), -1, 1, 0.99, 1.01);
+		guy.scale.set(scale * 2.5, scale * 2.5);
 
 		if (selected)
 			return;

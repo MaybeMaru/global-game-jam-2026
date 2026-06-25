@@ -213,10 +213,18 @@ class Player extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
+		var floored = isTouching(FLOOR);
+
 		boneTimer -= elapsed;
 		regenTimer -= elapsed;
 
-		var doAction = (FlxG.mouse.justPressed || FlxG.keys.justPressed.Q);
+		var doAction = (FlxG.mouse.justPressed || FlxG.keys.justPressed.Q || FlxG.keys.justPressed.F);
+		var doJump = (FlxG.mouse.justPressedRight || FlxG.keys.justPressed.SPACE || (maskType == SPIDER && doAction));
+
+		if (maskType == CLOWN && !floored && doJump)
+		{
+			doAction = true;
+		}
 
 		if (doAction && canMove)
 		{
@@ -261,8 +269,6 @@ class Player extends FlxSprite
 			}
 		}
 
-		var floored = isTouching(FLOOR);
-
 		if (!floored)
 		{
 			if (y > lastY)
@@ -288,11 +294,9 @@ class Player extends FlxSprite
 
 		velocity.y = FlxMath.lerp(velocity.y, clownActive ? 0 : fallSpeed, elapsed * 5);
 
-		if ((FlxG.mouse.justPressedRight || FlxG.keys.justPressed.SPACE || (maskType == SPIDER && doAction))
-			&& canMove) // remove when i figure out another move for spider
+		if (doJump && canMove)
 		{
-			var doJump = floored || (!spiderDoubleJump && maskType == SPIDER);
-			if (doJump)
+			if (floored || (!spiderDoubleJump && maskType == SPIDER))
 			{
 				velocity.y = -jumpForce;
 

@@ -18,15 +18,18 @@ class MaskSelection extends FlxTypedGroup<FlxSprite>
 
 	var maskSprites:Array<FlxSprite> = [];
 
+	var circle:FlxSprite;
+
 	public function new()
 	{
 		super();
 
-		var circle = new FlxSprite().makeGraphic(Std.int(100 / 3), Std.int(100 / 3), 0);
+		circle = new FlxSprite().makeGraphic(Std.int(100 / 3), Std.int(100 / 3), 0);
 		FlxSpriteUtil.drawCircle(circle, circle.width / 2, circle.height / 2, 48 / 3, FlxColor.TRANSPARENT, {color: FlxColor.WHITE, thickness: 2},
 			{smoothing: false});
 		circle.scale.set(3, 3);
 		circle.updateHitbox();
+		circle.centerOrigin();
 		add(circle);
 
 		for (i => mask in masks)
@@ -128,6 +131,8 @@ class MaskSelection extends FlxTypedGroup<FlxSprite>
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		// circle.angle = FlxMath.lerp(circle.angle, curMask * 90, elapsed * 20);
 
 		var canChangeMask = (PlayState.game.ui.life > 0) && PlayState.game.player.canMove;
 

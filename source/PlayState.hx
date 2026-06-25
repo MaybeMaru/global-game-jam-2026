@@ -97,6 +97,12 @@ class PlayState extends FlxState
 		moon.scrollFactor.set(0.005, 0.005);
 		add(moon);
 
+		var trees = new FlxBackdrop('assets/images/trees.png', X);
+		trees.y = 200;
+		trees.color = 0xff31245e;
+		trees.scrollFactor.set(0.05, 0.05);
+		add(trees);
+
 		var city = new FlxBackdrop('assets/images/buildings.png', X);
 		city.y = 125;
 		city.color = 0xff1b123a;
@@ -120,6 +126,7 @@ class PlayState extends FlxState
 		trees.y = 240;
 		trees.color = 0xff9f8fd9;
 		trees.scrollFactor.set(0.3, 0.3);
+		trees.flipX = true;
 		add(trees);
 
 		var trees = new FlxBackdrop('assets/images/trees.png', X);
