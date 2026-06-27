@@ -54,6 +54,11 @@ class Pause extends FlxSubState
 	{
 		index = FlxMath.wrap(index + change, 0, items.length - 1);
 
+		if (change != 0)
+		{
+			FlxG.sound.play('assets/sounds/change.wav');
+		}
+
 		for (i => member in members)
 		{
 			cast(member, FlxSprite).color = (i == index) ? FlxColor.YELLOW : FlxColor.WHITE;

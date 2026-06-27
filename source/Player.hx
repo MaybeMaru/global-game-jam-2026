@@ -114,7 +114,7 @@ class Player extends FlxSprite
 		// final inPumpkin = maskType == PUMPKIN;
 
 		pumpkinShadow.colorTransform.alphaOffset = FlxMath.lerp(pumpkinShadow.colorTransform.alphaOffset,
-			inDark ? ((pumpkinActive || pumpkinTimer > 0) ? -100 : 0) : -255, elapsed * (!inDark ? 2 : 1));
+			inDark ? ((pumpkinActive || pumpkinTimer > 0) ? -150 : 0) : -255, elapsed * (!inDark ? 2 : 1));
 
 		PlayState.game.postDraw.addOnce(() ->
 		{

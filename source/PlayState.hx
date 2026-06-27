@@ -277,7 +277,8 @@ class PlayState extends FlxState
 			});
 		}
 
-		if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.ENTER)
+		// open pause
+		if (FlxG.keys.justPressed.ESCAPE || FlxG.keys.justPressed.ENTER && (ui.life > 0))
 			openSubState(pause);
 	}
 

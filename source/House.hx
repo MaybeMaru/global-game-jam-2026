@@ -158,5 +158,10 @@ class House extends FlxSprite
 		wrong.velocity.y = -150;
 		wrong.velocity.x = FlxG.random.float(1.0, 5.0) * (FlxG.random.bool() ? -1 : 1);
 		wrong.acceleration.y = 500;
+
+		FlxTimer.wait(3, () ->
+		{
+			wrong.kill();
+		});
 	}
 }

@@ -18,21 +18,19 @@ class MainMenu extends FlxState
 	var title:FlxSprite;
 	var play:FlxText;
 
+	var guyShadow:FlxSprite;
 	var guy:FlxSprite;
+
+	var options:Array<String> = ["Play", "Play Endless"];
 
 	override function create()
 	{
 		super.create();
 
+		FlxG.mouse.visible = false;
+
 		FlxG.save.bind('CandyMaskerSaveData');
 		FlxG.save.data.bestScore ??= 0;
-
-		/*var title:FlxText = new FlxText();
-			title.text = "Candy Masker";
-			title.size = 26;
-			title.screenCenter();
-			title.y -= 60;
-			add(title) */
 
 		bgColor = 0xff0d090d;
 
@@ -47,6 +45,16 @@ class MainMenu extends FlxState
 		guy.scale.set(2.5, 2.5);
 		guy.updateHitbox();
 		guy.screenCenter();
+
+		guy.x -= 110;
+		guy.y += 20;
+
+		guyShadow = new FlxSprite().loadGraphic('assets/images/title guy.png');
+		guyShadow.scale.set(2.5, 2.5);
+		guyShadow.updateHitbox();
+		guyShadow.color = FlxColor.BLACK;
+		add(guyShadow);
+
 		add(guy);
 
 		title = new FlxSprite().loadGraphic('assets/images/logo.png');
@@ -56,8 +64,6 @@ class MainMenu extends FlxState
 		title.y -= 60;
 		add(title);
 
-		guy.x -= 110;
-		guy.y += 20;
 		title.x += 120;
 
 		play = new FlxText();
@@ -107,9 +113,12 @@ class MainMenu extends FlxState
 
 		title.offset.y = FlxMath.fastSin(FlxG.game.ticks / 600) * 4;
 
-		// camera.zoom = FlxMath.remapToRange(FlxMath.fastCos(FlxG.game.ticks / 1000), -1, 1, 0.99, 1.01);
-		var scale = FlxMath.remapToRange(FlxMath.fastCos(FlxG.game.ticks / 1000), -1, 1, 0.99, 1.01);
+		var scale:Float = FlxMath.remapToRange(FlxMath.fastCos(FlxG.game.ticks / 1000), -1, 1, 0.99, 1.01);
 		guy.scale.set(scale * 2.5, scale * 2.5);
+		guyShadow.scale.copyFrom(guy.scale);
+
+		var time:Float = FlxG.game.ticks / 800;
+		guyShadow.setPosition(guy.x + (FlxMath.fastCos(time) * 10), guy.y + (FlxMath.fastCos(time) * 10));
 
 		if (selected)
 			return;
