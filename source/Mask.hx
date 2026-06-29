@@ -8,12 +8,12 @@ import flixel.util.FlxColor;
 
 class Mask extends FlxSprite
 {
-	var player:FlxSprite;
+	var wearer:FlxSprite;
 
-	public function new(player:FlxSprite)
+	public function new(wearer:FlxSprite)
 	{
 		super();
-		this.player = player;
+		this.wearer = wearer;
 		makeGraphic(15, 15);
 		setType(NONE);
 	}
@@ -22,33 +22,39 @@ class Mask extends FlxSprite
 	{
 		final elapsed = FlxG.elapsed;
 
-		x = player.x + ((player.width - width) / 2);
-		flipX = player.facing == LEFT;
-		y = player.y - 2;
+		x = wearer.x + ((wearer.width - width) / 2);
+		flipX = wearer.facing == LEFT;
+		y = wearer.y - 2;
 
-		if (player is Player)
+		if (wearer is Player)
 		{
-			if (cast(player, Player).canMove)
-				x += player.facing == LEFT ? -10 : 10;
+			if (cast(wearer, Player).canMove)
+				x += wearer.facing == LEFT ? -10 : 10;
 		}
 		else
 		{
-			x += player.facing == LEFT ? -5 : 20; // kids
+			x += wearer.facing == LEFT ? -5 : 20; // kids
 			y -= 11;
+
+			if (wearer is Kid)
+			{
+				y += wearer.animation.curAnim.curFrame;
+				colorTransform = wearer.colorTransform;
+			}
 		}
 
-		if (player is Player)
+		if (wearer is Player)
 		{
-			var player:Player = cast player;
-			if (player.maskType == CLOWN)
+			var wearer:Player = cast wearer;
+			if (wearer.maskType == CLOWN)
 			{
-				var inflateSpeed = player.clownActive ? 4 : 8;
-				var inflateSize = player.clownActive ? 1.5 : 1.0;
+				var inflateSpeed = wearer.clownActive ? 4 : 8;
+				var inflateSize = wearer.clownActive ? 1.5 : 1.0;
 
 				scale.x = FlxMath.lerp(scale.x, inflateSize, elapsed * inflateSpeed);
 				scale.y = FlxMath.lerp(scale.y, inflateSize, elapsed * inflateSpeed);
 
-				if (player.clownActive)
+				if (wearer.clownActive)
 					y -= 10;
 			}
 			else
@@ -63,20 +69,9 @@ class Mask extends FlxSprite
 	public function setType(type:MaskType)
 	{
 		if (type == NONE)
-		{
 			return;
-		}
 
-		/*color = switch (type)
-			{
-				case NONE: FlxColor.WHITE;
-				case SKELETON: FlxColor.GRAY;
-				case PUMPKIN: FlxColor.ORANGE;
-				case SPIDER: FlxColor.PURPLE;
-				case CLOWN: FlxColor.RED;
-		}*/
-
-		var lol = switch (type)
+		var maskID = switch (type)
 		{
 			case NONE: '';
 			case SKELETON: 'skeleton';
@@ -85,7 +80,7 @@ class Mask extends FlxSprite
 			case CLOWN: "clown";
 		}
 
-		loadGraphic('assets/images/masks/' + lol + '.png');
+		loadGraphic('assets/images/masks/' + maskID + '.png');
 	}
 }
 

@@ -22,7 +22,6 @@ class Kid extends FlxSprite
 	public function new(maskType:MaskType, chunk:Chunk)
 	{
 		super();
-		// makeGraphic(35, 35);
 
 		this.chunk = chunk;
 
@@ -32,7 +31,7 @@ class Kid extends FlxSprite
 
 		loadGraphic('assets/images/kid.png', true, 52, 50);
 
-		if (FlxG.random.bool(0.1) && PlayState.game.curLevel > 0)
+		if (FlxG.random.bool(0.1) && ((PlayState.game == null) || (PlayState.game.curLevel > 0)))
 		{
 			loadGraphic('assets/images/kidtrans.png', true, 52, 50);
 			canDie = false;

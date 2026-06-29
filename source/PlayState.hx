@@ -289,4 +289,10 @@ class PlayState extends FlxState
 		super.draw();
 		postDraw.dispatch();
 	}
+
+	override function destroy()
+	{
+		super.destroy();
+		game = null;
+	}
 }

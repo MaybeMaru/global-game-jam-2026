@@ -1,9 +1,11 @@
 package;
 
+import editor.ChunkEditor;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
 import flixel.effects.FlxFlicker;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.sound.FlxSound;
 import flixel.text.FlxText;
@@ -16,12 +18,14 @@ class MainMenu extends FlxState
 	var playSound:FlxSound;
 
 	var title:FlxSprite;
-	var play:FlxText;
 
+	// var play:FlxText;
 	var guyShadow:FlxSprite;
 	var guy:FlxSprite;
 
-	var options:Array<String> = ["Play", "Play Endless"];
+	var curItem:Int = 0;
+	var options:Array<String> = ["Play", "Play Endless", #if debug "Chunk Editor", #end];
+	var items:FlxTypedGroup<FlxText>;
 
 	override function create()
 	{
@@ -51,6 +55,7 @@ class MainMenu extends FlxState
 
 		guyShadow = new FlxSprite().loadGraphic('assets/images/title guy.png');
 		guyShadow.scale.set(2.5, 2.5);
+		guyShadow.alpha = 0.6;
 		guyShadow.updateHitbox();
 		guyShadow.color = FlxColor.BLACK;
 		add(guyShadow);
@@ -66,25 +71,32 @@ class MainMenu extends FlxState
 
 		title.x += 120;
 
-		play = new FlxText();
-		play.text = "Press Enter To Start";
-		play.size = 26;
-		play.font = 'assets/data/headstone.ttf';
-		play.screenCenter();
-		play.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
+		items = new FlxTypedGroup<FlxText>();
+		add(items);
 
-		play.y += 150;
-		add(play);
+		for (i => option in options)
+		{
+			var item = new FlxText();
+			item.text = option;
+			item.size = 26;
+			item.font = 'assets/data/headstone.ttf';
+			item.screenCenter();
+			item.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
+
+			item.x += 180;
+			item.y += 15 + (50 * i);
+			items.add(item);
+		}
 
 		var credits = new FlxText();
 		credits.text = "Art & Programming by MaybeMaru\nMusic & Sounds by thisaintcub";
-		credits.alignment = RIGHT;
+		// credits.alignment = RIGHT;
 		credits.size = 18;
 		credits.font = 'assets/data/headstone.ttf';
 		credits.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
 		add(credits);
 
-		credits.x = FlxG.width - credits.width - 2;
+		credits.x = 2; // FlxG.width - credits.width - 2;
 		credits.y = FlxG.height - credits.height - 2;
 
 		var bestScore = new FlxText();
@@ -96,13 +108,30 @@ class MainMenu extends FlxState
 		add(bestScore);
 
 		bestScore.x = 2;
-		bestScore.y = FlxG.height - bestScore.height - 2;
+		bestScore.y = 2; // FlxG.height - bestScore.height - 2;
 
 		FlxG.camera.fade(FlxColor.BLACK, 0.2, true, null, true);
 
 		FlxG.sound.playMusic('assets/music/menu scary halloween boo.ogg');
 
 		playSound = FlxG.sound.load('assets/sounds/playButtonm.ogg');
+
+		changeSelection(0);
+
+		#if debug
+		FlxG.sound.muted = true;
+		#end
+	}
+
+	function changeSelection(change:Int)
+	{
+		curItem += change;
+		curItem = FlxMath.wrap(curItem, 0, items.members.length - 1);
+
+		for (i => item in items)
+		{
+			item.color = (i == curItem) ? FlxColor.YELLOW : FlxColor.WHITE;
+		}
 	}
 
 	var selected = false;
@@ -123,20 +152,42 @@ class MainMenu extends FlxState
 		if (selected)
 			return;
 
+		if (FlxG.keys.justPressed.UP)
+		{
+			changeSelection(-1);
+		}
+
+		if (FlxG.keys.justPressed.DOWN)
+		{
+			changeSelection(1);
+		}
+
 		if (FlxG.keys.justPressed.ENTER)
 		{
 			selected = true;
 
-			FlxFlicker.flicker(play, 4, 0.25);
+			// FlxFlicker.flicker(play, 4, 0.25);
 
 			FlxG.sound.music.stop();
 			playSound.play(true);
 			playSound.onComplete = () ->
 			{
-				FlxG.switchState(() -> new PlayState(true));
+				switch (options[curItem])
+				{
+					case "Play":
+						FlxG.switchState(() -> new PlayState(true));
+					case "Play Endless":
+						FlxG.switchState(() -> new PlayState(true));
+					case "Chunk Editor":
+						FlxG.switchState(() -> new ChunkEditor());
+				}
 			}
 
+			#if debug
+			playSound.onComplete();
+			#else
 			FlxG.camera.fade(FlxColor.BLACK, 2.5, false, null, true);
+			#end
 
 			// FlxG.camera.fade(FlxColor.BLACK, 0.2, false, () ->
 			// {
