@@ -32,6 +32,8 @@ class ChunkEditor extends FlxState
 	var curTileType:TileType = TileType.BLOCK;
 	final tileTypes:Array<TileType> = [TileType.BLOCK, TileType.ROAD, TileType.HOUSE, TileType.KID];
 
+	var flipped:Bool = false;
+
 	override function create()
 	{
 		super.create();
@@ -125,7 +127,7 @@ class ChunkEditor extends FlxState
 		}
 
 		level = new Street(-1);
-		level.addChunk(curChunkType);
+		level.addChunk(curChunkType, flipped);
 		levelContainer.add(level);
 
 		var chunkData = Street.chunkData.get(curChunkType);
@@ -168,8 +170,12 @@ class ChunkEditor extends FlxState
 		tile.alpha = FlxMath.remapToRange(FlxMath.fastSin(FlxG.game.ticks / 100), -1, 1, 0.6, 0.8);
 
 		// actual tile Y of the chunk data
+		tileX = Math.floor((flipped ? (usedSize.width - view.x) : view.x) / Street.tileSize);
 		tileY = Math.floor((view.y - usedSize.y) / Street.tileSize);
 		view.put();
+
+		if (FlxG.keys.justPressed.ESCAPE)
+			FlxG.switchState(() -> new MainMenu());
 
 		// erase tile
 		if (FlxG.mouse.justPressedRight)
@@ -180,6 +186,13 @@ class ChunkEditor extends FlxState
 		else if (FlxG.mouse.justPressed)
 		{
 			replaceTileAt(tileX, tileY, curTileType);
+		}
+
+		// flip
+		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.LEFT)
+		{
+			flipped = !flipped;
+			changeChunk(0);
 		}
 
 		// chunk type change
