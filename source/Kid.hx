@@ -19,7 +19,7 @@ class Kid extends FlxSprite
 
 	var canDie:Bool = true;
 
-	public function new(maskType:MaskType, chunk:Chunk)
+	public function new(maskType:MaskType, chunk:Chunk, isDebug:Bool)
 	{
 		super();
 
@@ -31,10 +31,13 @@ class Kid extends FlxSprite
 
 		loadGraphic('assets/images/kid.png', true, 52, 50);
 
-		if (FlxG.random.bool(0.1) && ((PlayState.game == null) || (PlayState.game.curLevel > 0)))
+		if (!isDebug)
 		{
-			loadGraphic('assets/images/kidtrans.png', true, 52, 50);
-			canDie = false;
+			if (FlxG.random.bool(0.1) && ((PlayState.game == null) || (PlayState.game.curLevel > 0)))
+			{
+				loadGraphic('assets/images/kidtrans.png', true, 52, 50);
+				canDie = false;
+			}
 		}
 
 		animation.add('run', [0, 1, 2], 12);
@@ -57,7 +60,7 @@ class Kid extends FlxSprite
 		velocity.y = 400;
 		// velocity.x = 50;
 
-		facing = FlxG.random.bool() ? RIGHT : LEFT;
+		facing = (FlxG.random.bool() && !isDebug) ? RIGHT : LEFT;
 		setFacingFlip(LEFT, false, false);
 		setFacingFlip(RIGHT, true, false);
 	}

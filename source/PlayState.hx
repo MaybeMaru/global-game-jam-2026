@@ -153,14 +153,14 @@ class PlayState extends FlxState
 		ui.camera = uiCam;
 		add(ui);
 
-		var maskTypes:Array<MaskType> = [
-			PUMPKIN, SKELETON, CLOWN, SPIDER, //
-			PUMPKIN, SKELETON, CLOWN,    SPIDER
-		];
+		// var maskTypes:Array<MaskType> = [
+		//	PUMPKIN, SKELETON, CLOWN, SPIDER, //
+		//	PUMPKIN, SKELETON, CLOWN,    SPIDER
+		// ];
 		// for (i => type in maskTypes)
 		//	background.add(new House(type, 200 + (i * 450)));
 
-		FlxG.debugger.drawDebug = true;
+		// FlxG.debugger.drawDebug = true;
 
 		FlxG.camera.maxScrollY = 350;
 		FlxG.camera.targetOffset.set(50, 0);

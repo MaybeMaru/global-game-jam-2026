@@ -128,6 +128,11 @@ class MainMenu extends FlxState
 		curItem += change;
 		curItem = FlxMath.wrap(curItem, 0, items.members.length - 1);
 
+		if (change != 0)
+		{
+			FlxG.sound.play('assets/sounds/change.wav');
+		}
+
 		for (i => item in items)
 		{
 			item.color = (i == curItem) ? FlxColor.YELLOW : FlxColor.WHITE;

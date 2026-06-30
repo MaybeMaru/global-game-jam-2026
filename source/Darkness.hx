@@ -49,9 +49,15 @@ class Darkness extends FlxSprite
 		x = PlayState.game.curLevel == 0 ? -600 : -500;
 		x -= width;
 
+		// delay based on how many houses there are to collect as a head start
+		var numHouses:Int = PlayState.game.street.houses.members.length;
+		var delay:Float = numHouses / 2;
+		var speed:Float = numHouses * 9;
+		x -= numHouses * 10;
+
 		// exponentially make it harder
 		velocity.x = 25;
-		FlxTween.tween(velocity, {x: PlayState.game.curLevel == 0 ? 75 : 250}, PlayState.game.street.levelLength / 120, {ease: FlxEase.quadIn});
+		FlxTween.tween(velocity, {x: speed}, PlayState.game.street.levelLength / 120, {ease: FlxEase.quadIn, startDelay: delay});
 
 		y -= 75;
 		scrollFactor.y = 0;

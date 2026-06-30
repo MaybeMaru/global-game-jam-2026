@@ -1,5 +1,6 @@
 package editor;
 
+import Street.MapChunk;
 import Street.MapChunkType;
 import Street.TileType;
 import flixel.FlxCamera;
@@ -20,6 +21,7 @@ class ChunkEditor extends FlxState
 	var curChunkType:MapChunkType;
 
 	var usedSize:FlxSprite;
+	var floorLevel:FlxSprite;
 	var tile:FlxSprite;
 
 	var levelContainer:FlxTypedGroup<Street>;
@@ -27,10 +29,29 @@ class ChunkEditor extends FlxState
 
 	var curTileText:FlxText;
 	var curChunkText:FlxText;
+	var flippedText:FlxText;
 
 	var curTile:Int = 0;
 	var curTileType:TileType = TileType.BLOCK;
 	final tileTypes:Array<TileType> = [TileType.BLOCK, TileType.ROAD, TileType.HOUSE, TileType.KID];
+	final chunkTypesList:Array<MapChunkType> = [
+		BASIC_STREET_1,
+		BASIC_STREET_2,
+		SKELETON_1,
+		SKELETON_2,
+		SKELETON_3,
+		CLOWN_1,
+		CLOWN_2,
+		CLOWN_3,
+		SPIDER_1,
+		SPIDER_2,
+		SPIDER_3,
+		HALL_2,
+		HALL_4,
+		HALL_8,
+		HALL_14,
+		TUTORIAL
+	];
 
 	var flipped:Bool = false;
 
@@ -58,6 +79,10 @@ class ChunkEditor extends FlxState
 		usedSize.alpha = 0.1;
 		add(usedSize);
 
+		floorLevel = new FlxSprite().makeGraphic(1, 1, FlxColor.BLUE);
+		floorLevel.alpha = 0.1;
+		add(floorLevel);
+
 		levelContainer = new FlxTypedGroup<Street>();
 		levelContainer.active = false;
 		add(levelContainer);
@@ -78,6 +103,12 @@ class ChunkEditor extends FlxState
 		curChunkText.camera = uiCam;
 		add(curChunkText);
 
+		flippedText = new FlxText();
+		flippedText.size = 16;
+		flippedText.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
+		flippedText.camera = uiCam;
+		add(flippedText);
+
 		curTileText = new FlxText();
 		curTileText.size = 16;
 		curTileText.setBorderStyle(OUTLINE, FlxColor.BLACK, 2);
@@ -86,14 +117,15 @@ class ChunkEditor extends FlxState
 
 		changeChunk(0);
 		changeTile(0);
+		changeFlipped(false);
 	}
 
 	function changeChunk(change:Int)
 	{
 		curChunk += change;
-		curChunk = FlxMath.wrap(curChunk, 0, Street.chunkTypesList.length - 1);
-		curChunkType = Street.chunkTypesList[curChunk];
-		regenChunk();
+		curChunk = FlxMath.wrap(curChunk, 0, chunkTypesList.length - 1);
+		curChunkType = chunkTypesList[curChunk];
+		_regenChunk = true;
 
 		curChunkText.text = curChunkType;
 		curChunkText.x = 2;
@@ -134,28 +166,112 @@ class ChunkEditor extends FlxState
 
 		usedSize.setGraphicSize(chunkData.tiles[0].length * Street.tileSize, chunkData.tiles.length * Street.tileSize);
 		usedSize.updateHitbox();
-
 		usedSize.y = Street.floorY - usedSize.height;
+
+		floorLevel.setGraphicSize(usedSize.width, Street.tileSize / 2);
+		floorLevel.updateHitbox();
+		floorLevel.y = Street.floorY - (Street.tileSize * 3) + (Street.tileSize / 4);
 	}
 
 	var tileX:Int = 0;
 	var tileY:Int = 0;
 
-	function replaceTileAt(x:Int, y:Int, tileType:TileType)
+	function getCurrentChunk()
 	{
 		var chunk = Street.chunkData.get(curChunkType);
-		var line = chunk.tiles[y];
-		if (line != null)
+		return chunk;
+	}
+
+	function getChunkWidth(chunk:MapChunk):Int
+	{
+		var w:Int = 0;
+		for (line in chunk.tiles)
 		{
-			var tile = line.charAt(x);
-			if (tile != "" && tile != tileType)
+			w = FlxMath.maxInt(w, line.length);
+		}
+		return w;
+	}
+
+	function replaceTileAt(x:Int, y:Int, tileType:TileType)
+	{
+		var chunk = getCurrentChunk();
+		var chunkWidth = getChunkWidth(chunk);
+
+		if (y < 0)
+		{
+			for (i in 0...FlxMath.absInt(y))
 			{
-				line = replaceChar(line, x, tileType);
-				chunk.tiles[y] = line;
-				changeChunk(0);
+				var line = "";
+				for (i in 0...chunkWidth)
+					line += TileType.AIR;
+
+				chunk.tiles.unshift(line);
+				setChunkDirty();
+			}
+			y = 0;
+		}
+
+		if ((x > 0) && (x >= chunkWidth))
+		{
+			for (tileID in 0...chunk.tiles.length)
+			{
+				while (chunk.tiles[tileID].length - 1 < x)
+				{
+					chunk.tiles[tileID] = chunk.tiles[tileID] + TileType.AIR;
+					setChunkDirty();
+				}
 			}
 		}
+
+		var line = chunk.tiles[y];
+		if (line == null)
+			return;
+
+		var tile = line.charAt(x);
+		if (tile != "" && tile != tileType)
+		{
+			line = replaceChar(line, x, tileType);
+			chunk.tiles[y] = line;
+			setChunkDirty();
+		}
 	}
+
+	function setChunkDirty()
+	{
+		_regenChunk = true;
+	}
+
+	function changeFlipped(value:Bool)
+	{
+		flippedText.text = 'Flipped: $value';
+		flippedText.x = 2;
+		flippedText.y = 18;
+
+		flipped = value;
+		changeChunk(0);
+	}
+
+	function isLineEmpty(line:String):Bool
+	{
+		for (i in 0...line.length)
+		{
+			if (line.charAt(i) != TileType.AIR)
+				return false;
+		}
+		return true;
+	}
+
+	function isColumnEmpty(chunk:MapChunk, x:Int):Bool
+	{
+		for (line in chunk.tiles)
+		{
+			if (line.charAt(x) != TileType.AIR)
+				return false;
+		}
+		return true;
+	}
+
+	var _regenChunk:Bool = false;
 
 	override function update(elapsed:Float)
 	{
@@ -181,6 +297,24 @@ class ChunkEditor extends FlxState
 		if (FlxG.mouse.justPressedRight)
 		{
 			replaceTileAt(tileX, tileY, TileType.AIR);
+
+			// remove unused lines
+			var chunk = getCurrentChunk();
+			while (chunk.tiles.length > 1 && isLineEmpty(chunk.tiles[0]))
+			{
+				chunk.tiles.shift();
+			}
+
+			// remove unused columns
+			var checkX = getChunkWidth(chunk) - 1;
+			while (checkX > 1 && isColumnEmpty(chunk, checkX))
+			{
+				for (y => line in chunk.tiles)
+				{
+					chunk.tiles[y] = chunk.tiles[y].substr(0, checkX);
+				}
+				checkX--;
+			}
 		}
 		// add tile
 		else if (FlxG.mouse.justPressed)
@@ -191,8 +325,7 @@ class ChunkEditor extends FlxState
 		// flip
 		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.LEFT)
 		{
-			flipped = !flipped;
-			changeChunk(0);
+			changeFlipped(!flipped);
 		}
 
 		// chunk type change
@@ -200,6 +333,12 @@ class ChunkEditor extends FlxState
 			changeChunk(-1);
 		if (FlxG.keys.justPressed.DOWN)
 			changeChunk(1);
+
+		if (_regenChunk)
+		{
+			_regenChunk = false;
+			regenChunk();
+		}
 
 		// tile type change
 		if (FlxG.mouse.wheel < 0)
@@ -213,14 +352,17 @@ class ChunkEditor extends FlxState
 		if (FlxG.keys.pressed.E)
 			camera.zoom += elapsed * camera.zoom;
 
+		var fast = FlxG.keys.pressed.SHIFT;
+		var speed = fast ? 3.0 : 1.0;
+
 		if (FlxG.keys.pressed.W)
-			camera.scroll.y -= 200 * elapsed;
+			camera.scroll.y -= 200 * elapsed * speed;
 		if (FlxG.keys.pressed.S)
-			camera.scroll.y += 200 * elapsed;
+			camera.scroll.y += 200 * elapsed * speed;
 		if (FlxG.keys.pressed.A)
-			camera.scroll.x -= 200 * elapsed;
+			camera.scroll.x -= 200 * elapsed * speed;
 		if (FlxG.keys.pressed.D)
-			camera.scroll.x += 200 * elapsed;
+			camera.scroll.x += 200 * elapsed * speed;
 
 		if (FlxG.keys.justPressed.ENTER)
 		{

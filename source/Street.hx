@@ -88,6 +88,9 @@ class Street extends FlxGroup
 
 	function randomMaskType()
 	{
+		if (isDebug)
+			return MaskType.PUMPKIN;
+
 		var getMask = _lastType;
 		while (getMask == _lastType)
 			getMask = maskTypes[FlxG.random.int(0, maskTypes.length - 1)];
@@ -183,6 +186,8 @@ class Street extends FlxGroup
 		return chunkLine.charAt(x);
 	}
 
+	static final safeSideTiles:Array<TileType> = [TileType.AIR, TileType.BLOCK];
+
 	public function addChunk(type:MapChunkType, flipped:Bool = false)
 	{
 		var chunk = new Chunk();
@@ -221,12 +226,12 @@ class Street extends FlxGroup
 
 						// cool perspective road thing
 						final off:Int = (flipped ? -1 : 1);
-						if (getTileAt(tileX - off, tileY, data) == "0")
+						if (safeSideTiles.contains(getTileAt(tileX - off, tileY, data)))
 						{
 							collider.animation.add("road", [0], 0);
 							collider.animation.play("road");
 						}
-						else if (getTileAt(tileX + off, tileY, data) == "0")
+						else if (safeSideTiles.contains(getTileAt(tileX + off, tileY, data)))
 						{
 							collider.animation.add("road", [0], 0, true, true);
 							collider.animation.play("road");
@@ -268,7 +273,22 @@ class Street extends FlxGroup
 								startX: openShadowX,
 								endX: xPos
 							});
+
+							if (isDebug)
+							{
+								var dark = new FlxSprite(openShadowX,
+									yPos + (tileSize / 4)).makeGraphic(Std.int(xPos - openShadowX), Std.int(tileSize / 2), FlxColor.MAGENTA);
+								dark.alpha = 0.5;
+								chunk.add(dark);
+							}
+
 							openShadowX = -1;
+						}
+
+						if (isDebug)
+						{
+							var dark = new FlxSprite(xPos, yPos).makeGraphic(tileSize, tileSize, FlxColor.MAGENTA);
+							chunk.add(dark);
 						}
 
 					// hardcoded tutorial bizz
@@ -343,7 +363,7 @@ class Street extends FlxGroup
 
 	function addKid(type:MaskType, x:Float, y:Float, chunk:Chunk)
 	{
-		var kid = new Kid(type, chunk);
+		var kid = new Kid(type, chunk, isDebug);
 		kid.setPosition(x, y);
 		kids.add(kid);
 	}
