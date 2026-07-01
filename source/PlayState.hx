@@ -85,26 +85,25 @@ class PlayState extends FlxState
 			starShaders.push(shader);
 		}
 
-		var stars = new FlxBackdrop('assets/images/stars.png', X);
+		var stars = new FlxBackdrop('assets/images/stars.png', XY);
+		stars.scrollFactor.set(0.0125 / 3, 0.0125 / 3);
+		stars.alpha = 0.1;
+		stars.blend = ADD;
+		createStarShader(stars);
+		add(stars);
+
+		var stars = new FlxBackdrop('assets/images/stars.png', XY);
 		stars.y = 25;
-		stars.scrollFactor.set(0.03, 0.03);
+		stars.scrollFactor.set(0.03 / 3, 0.03 / 3);
 		stars.alpha = 0.3;
 		stars.blend = ADD;
-		createStarShader(stars);
-		add(stars);
-
-		var stars = new FlxBackdrop('assets/images/stars.png', X);
-		stars.y = 75;
-		stars.scrollFactor.set(0.045, 0.045);
-		stars.alpha = 0.6;
 		stars.flipX = true;
-		stars.blend = ADD;
 		createStarShader(stars);
 		add(stars);
 
-		var stars = new FlxBackdrop('assets/images/stars.png', X);
+		var stars = new FlxBackdrop('assets/images/stars.png', XY);
 		stars.y = 125;
-		stars.scrollFactor.set(0.06, 0.06);
+		stars.scrollFactor.set(0.06 / 3, 0.06 / 3);
 		stars.blend = ADD;
 		createStarShader(stars);
 		add(stars);
