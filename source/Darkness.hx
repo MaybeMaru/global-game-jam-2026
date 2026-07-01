@@ -46,7 +46,7 @@ class Darkness extends FlxSprite
 			eye.offset.set(FlxG.random.int(-30, 150), FlxG.random.int(10, -450));
 		}
 
-		x = PlayState.game.curLevel == 0 ? -600 : -500;
+		x = (PlayState.game.curLevel == 0) ? -600 : -500; // TODO
 		x -= width;
 
 		// delay based on how many houses there are to collect as a head start

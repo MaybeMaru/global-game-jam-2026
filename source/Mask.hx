@@ -28,8 +28,27 @@ class Mask extends FlxSprite
 
 		if (wearer is Player)
 		{
+			final facingLeft:Bool = (wearer.facing == LEFT);
 			if (cast(wearer, Player).canMove)
-				x += wearer.facing == LEFT ? -10 : 10;
+				x += facingLeft ? -10 : 10;
+
+			switch (wearer.animation.curAnim.name)
+			{
+				case "walk":
+					switch (wearer.animation.curAnim.curFrame)
+					{
+						case 0 | 2:
+							y--;
+					}
+				case "shoot":
+					y--;
+					facingLeft ? x-- : x++;
+				case "jump":
+					y++;
+				case "fall":
+					x += facingLeft ? 2 : -2;
+					y -= (wearer.animation.curAnim.curFrame + 1);
+			}
 		}
 		else
 		{

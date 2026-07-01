@@ -119,7 +119,7 @@ class MainMenu extends FlxState
 		changeSelection(0);
 
 		#if debug
-		FlxG.sound.muted = true;
+		// FlxG.sound.muted = true;
 		#end
 	}
 
@@ -171,7 +171,7 @@ class MainMenu extends FlxState
 		{
 			selected = true;
 
-			// FlxFlicker.flicker(play, 4, 0.25);
+			FlxFlicker.flicker(items.members[curItem], 4, 0.25);
 
 			FlxG.sound.music.stop();
 			playSound.play(true);

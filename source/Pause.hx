@@ -11,12 +11,16 @@ import flixel.util.FlxColor;
 
 class Pause extends FlxSubState
 {
-	var items = ["Resume", "Reset", "Exit To Menu"];
+	var items:Array<String>;
 	var index:Int = 0;
 
 	public function new()
 	{
 		super(0x91000000);
+
+		items = ["Resume", "Reset", #if debug "Skip Level", #end "Exit To Menu"];
+		if (PlayState.game.curLevel == 0)
+			items.insert(items.length - 1, "Skip Tutorial");
 
 		var objects:Array<FlxText> = [];
 
@@ -68,16 +72,18 @@ class Pause extends FlxSubState
 	function doSelection()
 	{
 		didSelect = true;
-		switch (index)
+		switch (items[index])
 		{
-			case 0:
+			case "Resume":
 				close();
-			case 1:
+			case "Reset":
 				FlxG.sound.music.fadeOut(0.3);
 				PlayState.game.uiCam.fade(FlxColor.BLACK, 0.3, false, () -> FlxG.resetState());
-			case 2:
+			case "Exit To Menu":
 				FlxG.sound.music.fadeOut(0.3);
 				PlayState.game.uiCam.fade(FlxColor.BLACK, 0.3, false, () -> FlxG.switchState(() -> new MainMenu()));
+			case "Skip Tutorial" | "Skip Level":
+				PlayState.game.endLevel();
 		}
 	}
 

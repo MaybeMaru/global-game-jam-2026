@@ -14,6 +14,7 @@ class Main extends Sprite
 		FlxG.stage.showDefaultContextMenu = false;
 		FlxSprite.defaultAntialiasing = false;
 		FlxG.autoPause = false;
+		FlxG.fixedTimestep = false;
 		addChild(game);
 	}
 }

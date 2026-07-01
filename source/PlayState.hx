@@ -1,6 +1,7 @@
 package;
 
 import Mask.MaskType;
+import effects.WiggleEffect;
 import flixel.FlxCamera;
 import flixel.FlxG;
 import flixel.FlxObject;
@@ -39,6 +40,8 @@ class PlayState extends FlxState
 		curLevel = isTutorial ? 0 : 1;
 	}
 
+	var starShaders:Array<WiggleEffect> = [];
+
 	override public function create()
 	{
 		super.create();
@@ -70,11 +73,24 @@ class PlayState extends FlxState
 		backgradient.scrollFactor.y = 0.2;
 		backgradient.updateHitbox();
 
+		final createStarShader = (stars:FlxBackdrop) ->
+		{
+			var shader = new WiggleEffect();
+			shader.effectType = DREAMY;
+			shader.waveSpeed = (stars.alpha) / 2;
+			shader.update(stars.alpha * 10);
+			shader.waveFrequency = 2;
+			shader.waveAmplitude = 0.1;
+			stars.shader = shader.shader;
+			starShaders.push(shader);
+		}
+
 		var stars = new FlxBackdrop('assets/images/stars.png', X);
 		stars.y = 25;
 		stars.scrollFactor.set(0.03, 0.03);
 		stars.alpha = 0.3;
 		stars.blend = ADD;
+		createStarShader(stars);
 		add(stars);
 
 		var stars = new FlxBackdrop('assets/images/stars.png', X);
@@ -83,12 +99,14 @@ class PlayState extends FlxState
 		stars.alpha = 0.6;
 		stars.flipX = true;
 		stars.blend = ADD;
+		createStarShader(stars);
 		add(stars);
 
 		var stars = new FlxBackdrop('assets/images/stars.png', X);
 		stars.y = 125;
 		stars.scrollFactor.set(0.06, 0.06);
 		stars.blend = ADD;
+		createStarShader(stars);
 		add(stars);
 
 		var moon = new FlxSprite(500, 65).loadGraphic('assets/images/moon.png');
@@ -153,13 +171,6 @@ class PlayState extends FlxState
 		ui.camera = uiCam;
 		add(ui);
 
-		// var maskTypes:Array<MaskType> = [
-		//	PUMPKIN, SKELETON, CLOWN, SPIDER, //
-		//	PUMPKIN, SKELETON, CLOWN,    SPIDER
-		// ];
-		// for (i => type in maskTypes)
-		//	background.add(new House(type, 200 + (i * 450)));
-
 		// FlxG.debugger.drawDebug = true;
 
 		FlxG.camera.maxScrollY = 350;
@@ -167,8 +178,8 @@ class PlayState extends FlxState
 		// FlxG.camera.followLead.x = 2;
 		FlxG.camera.follow(player, PLATFORMER);
 
-		FlxG.camera.pixelPerfectRender = true;
-		uiCam.pixelPerfectRender = true;
+		// FlxG.camera.pixelPerfectRender = true;
+		// uiCam.pixelPerfectRender = true;
 
 		if (curLevel == 0)
 		{
@@ -262,6 +273,9 @@ class PlayState extends FlxState
 	override public function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		for (star in starShaders)
+			star.update(elapsed);
 
 		FlxG.collide(player, street.colliders);
 		FlxG.collide(street.kids, street.colliders);
